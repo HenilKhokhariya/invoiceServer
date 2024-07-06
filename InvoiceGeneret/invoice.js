@@ -10,7 +10,7 @@ function generateInvoice(invoice, filename, success, error) {
     path: "/",
     method: "POST",
     headers: {
-      Authorization: 'Bearer '+process.env.CreateInvoiceApi ,
+      Authorization: "Bearer sk_FYecfTXet0HmiQ6pAV9J69A3qzUdOWfz",
       "Content-Type": "application/json",
       "Content-Length": Buffer.byteLength(postData),
     },
