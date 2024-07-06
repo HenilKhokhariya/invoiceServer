@@ -80,9 +80,52 @@ const formatDate = (date) => {
   return `${day}-${month}-${year}`;
 };
 
+const inertData = async (
+  LogoName,
+  formData,
+  Items,
+  email,
+  invoiceNo,
+  createDate,
+  dueDate,
+  date_time
+) => {
+  await invoiceModule.Invoice.create({
+    email: email,
+    logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + LogoName,
+    invoice: formData.invoice,
+    invoiceNo: invoiceNo,
+    date_time,
+    formTitle: formData.formTitle,
+    billTo: formData.billTo,
+    shipTo: formData.shipTo,
+    createDate,
+    paymentTerms: formData.paymentTerms,
+    dueDate,
+    Phone: formData.phoneNumber,
+    Items,
+    notes: formData.itemNotes,
+    terms: formData.itemTerms,
+    subTotal: formData.subTotal,
+    discount: formData.billdiscount,
+    discountType: formData.discountType,
+    tax: formData.biltax,
+    taxType: formData.taxType,
+    shipping: formData.shipping,
+    total: formData.total,
+    paidAmount: formData.paidAmount,
+    balanceDue: formData.balanceDue,
+    currency: formData.currency,
+    status: false,
+  });
+  console.log(3);
+  downloadInvoice(email);
+  return 0;
+};
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./" + "Image/Logo/");
+    cb(null, "./Image/Logo/");
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
@@ -99,6 +142,7 @@ const upload = multer({ storage: storage });
 router.post("/LogoUpload", upload.single("file"), async (req, res) => {
   try {
     const LogoName = await req.file.filename;
+    console.log(1);
     const formData = await JSON.parse(req.body.formData);
     const Items = await JSON.parse(req.body.items);
     const email = await req.body.email;
@@ -107,36 +151,17 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
     const date_time = new Date().toString().substring(0, 25);
-
-    await invoiceModule.Invoice.create({
-      email: email,
-      logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + LogoName,
-      invoice: formData.invoice,
-      invoiceNo: invoiceNo,
-      date_time,
-      formTitle: formData.formTitle,
-      billTo: formData.billTo,
-      shipTo: formData.shipTo,
-      createDate,
-      paymentTerms: formData.paymentTerms,
-      dueDate,
-      Phone: formData.phoneNumber,
+    console.log(2);
+    const a = inertData(
+      LogoName,
+      formData,
       Items,
-      notes: formData.itemNotes,
-      terms: formData.itemTerms,
-      subTotal: formData.subTotal,
-      discount: formData.billdiscount,
-      discountType: formData.discountType,
-      tax: formData.biltax,
-      taxType: formData.taxType,
-      shipping: formData.shipping,
-      total: formData.total,
-      paidAmount: formData.paidAmount,
-      balanceDue: formData.balanceDue,
-      currency: formData.currency,
-      status: false,
-    });
-    downloadInvoice(email);
+      email,
+      invoiceNo,
+      createDate,
+      dueDate,
+      date_time
+    );
     res.status(200).json({
       message: "Image Uploaded",
     });
