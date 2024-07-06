@@ -82,7 +82,7 @@ const formatDate = (date) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./Image/Logo/");
+    cb(null, "./" + "Image/Logo/");
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
