@@ -1,4 +1,6 @@
 const express = require("express");
+const path = require("path");
+const fs = require("fs");
 const router = express.Router();
 const controler = require("./controler");
 const multer = require("multer");
@@ -123,9 +125,17 @@ const inertData = async (
   return 0;
 };
 
+const ensureDirectoryExistence = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+};
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./Image/Logo/");
+    const dir = path.resolve(__dirname, "Image/Logo");
+    ensureDirectoryExistence(dir);
+    cb(null, dir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
