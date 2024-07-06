@@ -88,10 +88,8 @@ const storage = multer.diskStorage({
     const uniqueSuffix = Date.now();
     cb(
       null,
-      "https://invoiceserver-nfyb.onrender.com/Image/Logo/" +
-        uniqueSuffix +
-        "-" +
-        file.originalname
+
+      uniqueSuffix + "-" + file.originalname
     );
   },
 });
@@ -112,7 +110,7 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
 
     await invoiceModule.Invoice.create({
       email: email,
-      logo: LogoName,
+      logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + LogoName,
       invoice: formData.invoice,
       invoiceNo: invoiceNo,
       date_time,
