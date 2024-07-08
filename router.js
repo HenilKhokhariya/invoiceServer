@@ -72,6 +72,7 @@ const downloadInvoice = async (InvoiceName) => {
     fileName + ".pdf",
     function () {
       console.log("Saved invoice to invoice.pdf");
+      return data.InvoiceName;
     },
     function (error) {
       console.error(error);
@@ -127,9 +128,7 @@ const inertData = async (
     status: false,
     InvoiceName,
   });
-  downloadInvoice(InvoiceName);
-
-  return InvoiceName;
+  return downloadInvoice(InvoiceName);
 };
 
 const ensureDirectoryExistence = (dir) => {
@@ -173,7 +172,7 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
       dateI.replaceAll(" ", "") +
       timeI.replaceAll(":", "") +
       ".pdf";
-    const a = inertData(
+    return inertData(
       LogoName,
       formData,
       Items,
@@ -185,10 +184,6 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
       timeI,
       InvoiceName
     );
-    res.status(200).send({
-      status: 200,
-      msg: InvoiceName,
-    });
   } catch (error) {
     res.status(400).send(error);
   }
