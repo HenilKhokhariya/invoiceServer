@@ -130,7 +130,6 @@ const inertData = async (
       InvoiceName +
       ".pdf",
   });
-  console.log(3);
   downloadInvoice(email);
   return 0;
 };
@@ -162,7 +161,6 @@ const upload = multer({ storage: storage });
 router.post("/LogoUpload", upload.single("file"), async (req, res) => {
   try {
     const LogoName = await req.file.filename;
-    console.log(1);
     const formData = await JSON.parse(req.body.formData);
     const Items = await JSON.parse(req.body.items);
     const email = await req.body.email;
