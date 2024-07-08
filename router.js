@@ -63,12 +63,9 @@ const downloadInvoice = async (email) => {
     terms: data.terms,
   };
 
-  const date = data.dateI;
-  const time = data.timeI;
-  const fileName = date.replaceAll(" ", "") + time.replaceAll(":", "");
   iGenerate.generateInvoice(
     invoice,
-    "MonJul082024" + "125658" + ".pdf",
+    data.InvoiceName,
     function () {
       console.log("Saved invoice to invoice.pdf");
     },
@@ -126,7 +123,8 @@ const inertData = async (
     status: false,
     InvoiceName:
       "https://invoiceserver-nfyb.onrender.com/InvoiceGeneret/userInvoice/" +
-      InvoiceName,
+      InvoiceName +
+      ".pdf",
   });
   console.log(3);
   downloadInvoice(email);
