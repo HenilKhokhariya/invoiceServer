@@ -10,11 +10,12 @@ const itemSchema = new mongoose.Schema({
 
 const invoiceSchema = mongoose.Schema(
   {
-    email: { type: String, require: true },
+    email: { type: String },
     logo: { type: String },
     invoice: { type: String },
     invoiceNo: { type: String },
-    date_time: { type: String, require: true },
+    dateI: { type: String },
+    timeI: { type: String },
     formTitle: { type: String },
     billTo: { type: String },
     shipTo: { type: String },
@@ -36,6 +37,7 @@ const invoiceSchema = mongoose.Schema(
     balanceDue: { type: String },
     currency: { type: String },
     status: { type: String },
+    InvoiceName: { type: String },
   },
   {
     timestamps: true,

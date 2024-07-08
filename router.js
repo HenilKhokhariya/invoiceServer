@@ -62,11 +62,13 @@ const downloadInvoice = async (email) => {
     notes: data.notes,
     terms: data.terms,
   };
-  const pdfName = data._id + data.email;
 
+  const date = data.dateI;
+  const time = data.timeI;
+  const fileName = date.replaceAll(" ", "") + time.replaceAll(":", "");
   iGenerate.generateInvoice(
     invoice,
-    pdfName + ".pdf",
+    "MonJul082024" + "125658" + ".pdf",
     function () {
       console.log("Saved invoice to invoice.pdf");
     },
@@ -90,14 +92,17 @@ const inertData = async (
   invoiceNo,
   createDate,
   dueDate,
-  date_time
+  dateI,
+  timeI,
+  InvoiceName
 ) => {
   await invoiceModule.Invoice.create({
     email: email,
     logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + LogoName,
     invoice: formData.invoice,
     invoiceNo: invoiceNo,
-    date_time,
+    dateI,
+    timeI,
     formTitle: formData.formTitle,
     billTo: formData.billTo,
     shipTo: formData.shipTo,
@@ -119,6 +124,9 @@ const inertData = async (
     balanceDue: formData.balanceDue,
     currency: formData.currency,
     status: false,
+    InvoiceName:
+      "https://invoiceserver-nfyb.onrender.com/InvoiceGeneret/userInvoice/" +
+      InvoiceName,
   });
   console.log(3);
   downloadInvoice(email);
@@ -160,8 +168,9 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
 
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
-    const date_time = new Date().toString().substring(0, 25);
-    console.log(2);
+    const dateI = new Date().toString().substring(0, 15);
+    const timeI = new Date().toString().substring(16, 24);
+    const InvoiceName = dateI.replaceAll(" ", "") + timeI.replaceAll(":", "");
     const a = inertData(
       LogoName,
       formData,
@@ -170,7 +179,9 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
       invoiceNo,
       createDate,
       dueDate,
-      date_time
+      dateI,
+      timeI,
+      InvoiceName
     );
     res.status(200).json({
       message: "Image Uploaded",
@@ -180,7 +191,7 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
   }
 });
 router.route("/invoiceDownload").get((req, res) => {
-  downloadInvoice("henilkhokhariya27@gmail.com");
+  downloadInvoice("henilkhokhariya@gmail.com");
 });
 
 module.exports = router;
