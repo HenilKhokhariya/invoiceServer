@@ -187,7 +187,7 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     );
     res.status(200).json({
       status: 200,
-      msg: a,
+      msg: InvoiceName,
     });
   } catch (error) {
     res.status(400).send(error);
