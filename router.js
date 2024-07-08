@@ -27,7 +27,7 @@ const downloadInvoice = async (InvoiceName) => {
       invoiceNo: -1,
     })
     .exec();
-  console.log(data);
+
   const currency = await currencyModule.currencyList.findOne({
     currencySymbol: data.currency,
   });
@@ -67,7 +67,6 @@ const downloadInvoice = async (InvoiceName) => {
   const date = data.dateI;
   const time = data.timeI;
   const fileName = date.replaceAll(" ", "") + time.replaceAll(":", "");
-  console.log(fileName);
   iGenerate.generateInvoice(
     invoice,
     fileName + ".pdf",
@@ -129,7 +128,8 @@ const inertData = async (
     InvoiceName,
   });
   downloadInvoice(InvoiceName);
-  return 0;
+
+  return InvoiceName;
 };
 
 const ensureDirectoryExistence = (dir) => {
@@ -186,10 +186,11 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
       InvoiceName
     );
     res.status(200).json({
-      message: "Image Uploaded",
+      status: 200,
+      msg: a,
     });
   } catch (error) {
-    res.send(error);
+    res.status(400).send(error);
   }
 });
 router.route("/invoiceDownload").get((req, res) => {
