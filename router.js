@@ -40,7 +40,7 @@ const downloadInvoice = async (email) => {
     });
   }
   var invoice = {
-    logo: "https://cdn.salla.sa/jKgRa/phamtVTpfGdjoZHVNzjJlLdFE8eXXD4COP8uIxAu.png",
+    logo: data.logo,
     from: data.formTitle,
     to: data.billTo,
     ship_to: data.shipTo,
