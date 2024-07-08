@@ -63,9 +63,12 @@ const downloadInvoice = async (email) => {
     terms: data.terms,
   };
 
+  const date = data.dateI;
+  const time = data.timeI;
+  const fileName = date.replaceAll(" ", "") + time.replaceAll(":", "");
   iGenerate.generateInvoice(
     invoice,
-    data.InvoiceName,
+    fileName + ".pdf",
     function () {
       console.log("Saved invoice to invoice.pdf");
     },
