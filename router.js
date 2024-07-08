@@ -164,6 +164,8 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     const email = await req.body.email;
     const invoiceNo = await req.body.invoiceNo;
     const InvoiceName = await req.body.invoiceName;
+    const dateI = await req.body.dateI;
+    const timeI = await req.body.timeI;
 
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
