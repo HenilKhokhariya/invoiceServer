@@ -72,7 +72,6 @@ const downloadInvoice = async (InvoiceName) => {
     fileName + ".pdf",
     function () {
       console.log("Saved invoice to invoice.pdf");
-      return data.InvoiceName;
     },
     function (error) {
       console.error(error);
@@ -128,7 +127,9 @@ const inertData = async (
     status: false,
     InvoiceName,
   });
-  return downloadInvoice(InvoiceName);
+  downloadInvoice(InvoiceName);
+
+  return InvoiceName;
 };
 
 const ensureDirectoryExistence = (dir) => {
@@ -162,17 +163,12 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     const Items = await JSON.parse(req.body.items);
     const email = await req.body.email;
     const invoiceNo = await req.body.invoiceNo;
+    const InvoiceName = await req.body.invoiceName;
 
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
-    const dateI = new Date().toString().substring(0, 15);
-    const timeI = new Date().toString().substring(16, 24);
-    const InvoiceName =
-      "https://invoiceserver-nfyb.onrender.com/InvoiceGeneret/userInvoice/" +
-      dateI.replaceAll(" ", "") +
-      timeI.replaceAll(":", "") +
-      ".pdf";
-    return inertData(
+
+    const a = inertData(
       LogoName,
       formData,
       Items,
