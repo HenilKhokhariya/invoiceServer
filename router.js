@@ -27,6 +27,7 @@ const downloadInvoice = async (InvoiceName) => {
       invoiceNo: -1,
     })
     .exec();
+  console.log(data);
   const currency = await currencyModule.currencyList.findOne({
     currencySymbol: data.currency,
   });
