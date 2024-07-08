@@ -126,10 +126,7 @@ const inertData = async (
     balanceDue: formData.balanceDue,
     currency: formData.currency,
     status: false,
-    InvoiceName:
-      "https://invoiceserver-nfyb.onrender.com/InvoiceGeneret/userInvoice/" +
-      InvoiceName +
-      ".pdf",
+    InvoiceName,
   });
   downloadInvoice(InvoiceName);
   return 0;
@@ -171,7 +168,11 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     const dueDate = formatDate(formData.billDuedate);
     const dateI = new Date().toString().substring(0, 15);
     const timeI = new Date().toString().substring(16, 24);
-    const InvoiceName = dateI.replaceAll(" ", "") + timeI.replaceAll(":", "");
+    const InvoiceName =
+      "https://invoiceserver-nfyb.onrender.com/InvoiceGeneret/userInvoice/" +
+      dateI.replaceAll(" ", "") +
+      timeI.replaceAll(":", "") +
+      ".pdf";
     const a = inertData(
       LogoName,
       formData,
