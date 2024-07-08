@@ -21,8 +21,8 @@ router.route("/currencyListAdd").get(controler.currencyListAdd);
 router.route("/UserInvoice").post(controler.UserInvoice);
 
 // Download Invoice
-const downloadInvoice = async (email) => {
-  const data = await invoiceModule.Invoice.findOne({ email })
+const downloadInvoice = async (InvoiceName) => {
+  const data = await invoiceModule.Invoice.findOne({ InvoiceName })
     .sort({
       invoiceNo: -1,
     })
@@ -130,7 +130,7 @@ const inertData = async (
       InvoiceName +
       ".pdf",
   });
-  downloadInvoice(email);
+  downloadInvoice(InvoiceName);
   return 0;
 };
 
