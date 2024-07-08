@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const app = express();
 const router = require("./router");
@@ -9,11 +10,16 @@ var corsOptions = {
   methods: "POST,GET,PUT,DELETE",
   credentials: true,
 };
-app.use("/Image/Logo", express.static("Image/Logo"));
+// app.use("/Image/Logo", express.static("Image/Logo"));
+app.use("/Image/Logo", express.static(path.join(__dirname, "Image/Logo")));
 app.use(
   "/InvoiceGeneret/userInvoice",
-  express.static("InvoiceGeneret/userInvoice")
+  express.static(path.join(__dirname, "InvoiceGeneret/userInvoice"))
 );
+// app.use(
+//   "/InvoiceGeneret/userInvoice",
+//   express.static("InvoiceGeneret/userInvoice")
+// );
 app.use(cors(corsOptions));
 const connectDB = require("./Mongo/conncetion");
 const PORT = process.env.PORT || 5000;
