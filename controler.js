@@ -271,6 +271,16 @@ const UserInvoice = async (req, res) => {
     res.status(400).send(error);
   }
 };
+
+const InvoiceDelete = async (req, res) => {
+  try {
+    const _id = await req.body.InvoiceId;
+    await invoiceModule.Invoice.deleteOne({ _id });
+    res.status(200).json({ status: 200, msg: "Invoice Deleted" });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
 module.exports = {
   Home,
   Register,
@@ -284,4 +294,5 @@ module.exports = {
   InvoiceNumber,
   currencyListAdd,
   UserInvoice,
+  InvoiceDelete,
 };
