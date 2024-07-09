@@ -127,6 +127,7 @@ const inertData = async (
     status: false,
     InvoiceName,
   });
+
   downloadInvoice(InvoiceName);
 
   return InvoiceName;
@@ -189,6 +190,14 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
 });
 router.route("/invoiceDownload").get((req, res) => {
   downloadInvoice("henilkhokhariya@gmail.com");
+});
+
+router.route("/download").get((req, res) => {
+  const file = path.join(
+    __dirname,
+    "/InvoiceGeneret/userInvoice/TueJul092024115030.pdf"
+  );
+  res.download(file);
 });
 
 module.exports = router;
