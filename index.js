@@ -12,14 +12,15 @@ var corsOptions = {
 };
 // app.use("/Image/Logo", express.static("Image/Logo"));
 app.use("/Image/Logo", express.static(path.join(__dirname, "Image/Logo")));
+app.use("/Image/MobileLogo", express.static("Image/MobileLogo"));
 app.use(
   "/InvoiceGeneret/userInvoice",
   express.static(path.join(__dirname, "InvoiceGeneret/userInvoice"))
 );
-// app.use(
-//   "/InvoiceGeneret/userInvoice",
-//   express.static("InvoiceGeneret/userInvoice")
-// );
+app.use(
+  "/InvoiceGeneret/userMInvoice",
+  express.static("InvoiceGeneret/userMInvoice")
+);
 app.use(cors(corsOptions));
 const connectDB = require("./Mongo/conncetion");
 const PORT = process.env.PORT || 5000;
