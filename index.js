@@ -3,6 +3,8 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const router = require("./router");
+const routerM = require("./RouterM");
+
 const cors = require("cors");
 var corsOptions = {
   origin: "http://localhost:3000",
@@ -27,6 +29,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use("/api", router);
+app.use("/apiM", routerM);
+
 connectDB().then(
   app.listen(PORT, (res) => {
     try {
