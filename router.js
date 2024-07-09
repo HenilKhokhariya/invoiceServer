@@ -193,8 +193,9 @@ router.route("/invoiceDownload").get((req, res) => {
 });
 
 router.route("/download").get((req, res) => {
-  const file =
-    "https://invoiceserver-nfyb.onrender.com/InvoiceGeneret/userInvoice/TueJul092024115030.pdf";
+  const fName = req.query.filename;
+  console.log(fName);
+  const file = path.join(__dirname, fName);
   res.download(file);
 });
 
