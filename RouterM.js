@@ -49,6 +49,7 @@ const downloadInvoice = async (invoiceName) => {
     });
   }
   var invoice = {
+    logo: data.logo,
     from: data.from,
     to: data.to,
     ship_to: data.ship_to,
