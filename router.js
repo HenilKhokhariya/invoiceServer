@@ -50,7 +50,6 @@ const downloadInvoice = async (InvoiceName) => {
     number: data.invoiceNo,
     date: data.createDate,
     payment_terms: data.paymentTerms,
-    phone: data.Phone,
     due_date: data.dueDate,
     items: Items,
     fields: {
