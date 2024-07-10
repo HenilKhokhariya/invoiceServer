@@ -460,7 +460,7 @@ const UpdateInvoiceLogo = async (
 
 const LogoUpdate = async (req, res) => {
   try {
-    const LogoName = await req.file.filename;
+    const logo = await req.file.filename;
     const formData = await req.body.formData;
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
