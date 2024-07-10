@@ -1,6 +1,8 @@
 const userModule = require("./module/user");
 const invoiceModule = require("./module/invoice");
 const currencyModule = require("./module/currencyList");
+const iGenerate = require("./InvoiceGeneret/invoice");
+
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr("myTotallySecretKey");
 const sendRmail = require("./Email/registrationOtp");
@@ -307,6 +309,171 @@ const FindInvoice = async (req, res) => {
   }
 };
 
+const formatDate = (date) => {
+  const [year, month, day] = date.split("-");
+  return `${day}-${month}-${year}`;
+};
+
+const downloadInvoice = async (_id) => {
+  const data = await invoiceModule.Invoice.findOne({ _id });
+
+  const currency = await currencyModule.currencyList.findOne({
+    currencySymbol: data.currency,
+  });
+
+  var Items = [];
+  for (var i = 0; i < data.Items.length; i++) {
+    Items.push({
+      name: data.Items[i].itemName,
+      quantity: data.Items[i].itemQty,
+      unit_cost: data.Items[i].itemRate,
+    });
+  }
+  var invoice = {
+    logo: data.logo,
+    from: data.formTitle,
+    to: data.billTo,
+    ship_to: data.shipTo,
+    currency: currency.countryName,
+    number: data.invoiceNo,
+    date: data.createDate,
+    payment_terms: data.paymentTerms,
+    phone: data.phone,
+    due_date: data.dueDate,
+    items: Items,
+    fields: {
+      tax: data.taxType,
+      discounts: data.discountType,
+      shipping: data.shipping,
+    },
+    discounts: data.discount,
+    tax: data.tax,
+    shipping: data.shipping,
+    amount_paid: data.paidAmount,
+    notes: data.notes,
+    terms: data.terms,
+  };
+
+  const date = data.dateI;
+  const time = data.timeI;
+  const fileName = date.replaceAll(" ", "") + time.replaceAll(":", "");
+  iGenerate.generateInvoice(
+    invoice,
+    fileName + ".pdf",
+    function () {
+      console.log("Saved invoice to invoice.pdf");
+    },
+    function (error) {
+      console.error(error);
+    }
+  );
+};
+
+const UpdateInvoiceData = async (formData, Items, _id, createDate, dueDate) => {
+  await invoiceModule.Invoice.updateOne(
+    { _id },
+    {
+      $set: {
+        invoice: formData.invoice,
+        formTitle: formData.formTitle,
+        billTo: formData.billTo,
+        shipTo: formData.shipTo,
+        createDate,
+        paymentTerms: formData.paymentTerms,
+        dueDate,
+        Phone: formData.phoneNumber,
+        notes: formData.itemNotes,
+        terms: formData.itemTerms,
+        currency: formData.currency,
+        subTotal: formData.subTota,
+        taxType: formData.taxType,
+        discountType: formData.discountType,
+        shipping: formData.shipping,
+        paidAmount: formData.paidAmount,
+        total: formData.total,
+        balanceDue: formData.balanceDue,
+        tax: formData.biltax,
+        discount: formData.billdiscount,
+        Items: Items,
+      },
+    }
+  );
+
+  downloadInvoice(_id);
+};
+
+const UpdateInvoice = async (req, res) => {
+  try {
+    const _id = await req.body._id;
+    const formData = await req.body.formData;
+    const createDate = formatDate(formData.billdate);
+    const dueDate = formatDate(formData.billDuedate);
+    const Items = await req.body.items;
+
+    UpdateInvoiceData(formData, Items, _id, createDate, dueDate);
+    res.status(200).json({ status: 200, msg: "Update SuccessFully" });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+const UpdateInvoiceLogo = async (
+  formData,
+  Items,
+  _id,
+  createDate,
+  dueDate,
+  logo
+) => {
+  await invoiceModule.Invoice.updateOne(
+    { _id },
+    {
+      $set: {
+        logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + logo,
+        invoice: formData.invoice,
+        formTitle: formData.formTitle,
+        billTo: formData.billTo,
+        shipTo: formData.shipTo,
+        createDate,
+        paymentTerms: formData.paymentTerms,
+        dueDate,
+        Phone: formData.phoneNumber,
+        notes: formData.itemNotes,
+        terms: formData.itemTerms,
+        currency: formData.currency,
+        subTotal: formData.subTota,
+        taxType: formData.taxType,
+        discountType: formData.discountType,
+        shipping: formData.shipping,
+        paidAmount: formData.paidAmount,
+        total: formData.total,
+        balanceDue: formData.balanceDue,
+        tax: formData.biltax,
+        discount: formData.billdiscount,
+        Items: Items,
+      },
+    }
+  );
+
+  downloadInvoice(_id);
+};
+
+const LogoUpdate = async (req, res) => {
+  try {
+    const LogoName = await req.file.filename;
+    const formData = await req.body.formData;
+    const createDate = formatDate(formData.billdate);
+    const dueDate = formatDate(formData.billDuedate);
+    const Items = await req.body.items;
+    const _id = await req.body._id;
+
+    UpdateInvoiceLogo(formData, Items, _id, createDate, dueDate, logo);
+    res.status(200).json({ status: 200, msg: "Update SuccessFully" });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
 module.exports = {
   Home,
   Register,
@@ -323,4 +490,5 @@ module.exports = {
   InvoiceDelete,
   InvoiceStatus,
   FindInvoice,
+  LogoUpdate,
 };

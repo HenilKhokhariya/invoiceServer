@@ -22,6 +22,7 @@ router.route("/UserInvoice").post(controler.UserInvoice);
 router.route("/InvoiceDelete").post(controler.InvoiceDelete);
 router.route("/InvoiceStatus").post(controler.InvoiceStatus);
 router.route("/FindInvoice").post(controler.FindInvoice);
+router.route("/UpdateInvoice").post(controler.UpdateInvoice);
 
 // Download Invoice
 const downloadInvoice = async (InvoiceName) => {
@@ -191,6 +192,7 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     res.status(400).send(error);
   }
 });
+
 router.route("/invoiceDownload").get((req, res) => {
   downloadInvoice("henilkhokhariya@gmail.com");
 });
@@ -201,5 +203,7 @@ router.route("/download").get((req, res) => {
   const file = path.join(__dirname, fName);
   res.download(file);
 });
+
+router.post("/LogoUpdate", upload.single("file"), controler.LogoUpdate);
 
 module.exports = router;
