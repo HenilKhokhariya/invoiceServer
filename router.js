@@ -159,7 +159,25 @@ const storage = multer.diskStorage({
   },
 });
 
+const storage1 = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.resolve(__dirname, "Image/Logo");
+    ensureDirectoryExistence(dir);
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(
+      null,
+
+      uniqueSuffix + "-" + file.originalname
+    );
+  },
+});
+
 const upload = multer({ storage: storage });
+
+const upload1 = multer({ storage: storage1 });
 
 router.post("/LogoUpload", upload.single("file"), async (req, res) => {
   try {
@@ -204,6 +222,6 @@ router.route("/download").get((req, res) => {
   res.download(file);
 });
 
-router.post("/LogoUpdate", upload.single("file"), controler.LogoUpdate);
+router.post("/LogoUpdate", upload1.single("file"), controler.LogoUpdate);
 
 module.exports = router;
