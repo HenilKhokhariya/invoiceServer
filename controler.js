@@ -461,10 +461,10 @@ const UpdateInvoiceLogo = async (
 const LogoUpdate = async (req, res) => {
   try {
     const logo = await req.file.filename;
-    const formData = await req.body.formData;
+    const formData = JSON.parse(await req.body.formData);
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
-    const Items = await req.body.items;
+    const Items = await JSON.parse(await req.body.items);
     const _id = await req.body._id;
 
     UpdateInvoiceLogo(formData, Items, _id, createDate, dueDate, logo);
