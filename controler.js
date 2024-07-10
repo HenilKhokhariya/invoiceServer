@@ -491,4 +491,5 @@ module.exports = {
   InvoiceStatus,
   FindInvoice,
   LogoUpdate,
+  UpdateInvoice,
 };
