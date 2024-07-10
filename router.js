@@ -21,6 +21,8 @@ router.route("/currencyListAdd").get(controler.currencyListAdd);
 router.route("/UserInvoice").post(controler.UserInvoice);
 router.route("/InvoiceDelete").post(controler.InvoiceDelete);
 router.route("/InvoiceStatus").post(controler.InvoiceStatus);
+router.route("/FindInvoice").post(controler.FindInvoice);
+
 // Download Invoice
 const downloadInvoice = async (InvoiceName) => {
   const data = await invoiceModule.Invoice.findOne({ InvoiceName })

@@ -292,6 +292,21 @@ const InvoiceStatus = async (req, res) => {
     res.status(400).send(error);
   }
 };
+
+const FindInvoice = async (req, res) => {
+  try {
+    const _id = await req.body.id;
+
+    const data = await invoiceModule.Invoice.findOne({ _id })
+      .sort({ invoiceNo: -1 })
+      .exec();
+
+    res.status(200).json({ status: 200, msg: data });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
 module.exports = {
   Home,
   Register,
@@ -307,4 +322,5 @@ module.exports = {
   UserInvoice,
   InvoiceDelete,
   InvoiceStatus,
+  FindInvoice,
 };
