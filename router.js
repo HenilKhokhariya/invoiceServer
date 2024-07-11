@@ -23,6 +23,8 @@ router.route("/InvoiceDelete").post(controler.InvoiceDelete);
 router.route("/InvoiceStatus").post(controler.InvoiceStatus);
 router.route("/FindInvoice").post(controler.FindInvoice);
 router.route("/UpdateInvoice").post(controler.UpdateInvoice);
+router.route("/OnlyInvoice").post(controler.OnlyInvoice);
+
 
 // Download Invoice
 const downloadInvoice = async (InvoiceName) => {
