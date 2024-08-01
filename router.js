@@ -37,9 +37,11 @@ const ensureDirectoryExistence = (dir) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // const dir = path.resolve(__dirname, "Image/Logo");
-    // ensureDirectoryExistence(dir);
-    cb(null, "/Image/Logo");
+    const dir = path.resolve(__dirname, "Image/Logo");
+    ensureDirectoryExistence(dir);
+    console.log(1);
+
+    cb(null, dir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
@@ -81,14 +83,14 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     const InvoiceName = await req.body.invoiceName;
     const dateI = await req.body.dateI;
     const timeI = await req.body.timeI;
-
+    console.log(LogoName);
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
     const id = dateI + timeI;
     await invoiceModule.Invoice.create({
       _id: id.replaceAll(" ", ""),
       email: email,
-      logo: "https://invoice-server-pi.vercel.app/Image/Logo/" + LogoName,
+      logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + LogoName,
       invoice: formData.invoice,
       invoiceNo: invoiceNo,
       dateI,
@@ -116,8 +118,11 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
       status: false,
       InvoiceName,
     });
+    console.log(3);
+
     res.status(200).send("Done");
   } catch (error) {
+    console.log(error);
     res.status(400).send(error);
   }
 });
