@@ -8,4 +8,3 @@ const currencySchema = mongoose.Schema({
 const currencyList = mongoose.model("currencyList", currencySchema);
 
 module.exports = { currencyList };
-

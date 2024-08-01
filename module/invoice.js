@@ -10,6 +10,7 @@ const itemSchema = new mongoose.Schema({
 
 const invoiceSchema = mongoose.Schema(
   {
+    _id: { type: String },
     email: { type: String },
     logo: { type: String },
     invoice: { type: String },

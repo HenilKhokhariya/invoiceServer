@@ -1,8 +1,6 @@
 const userModule = require("./module/user");
 const invoiceModule = require("./module/invoice");
 const currencyModule = require("./module/currencyList");
-const iGenerate = require("./InvoiceGeneret/invoice");
-
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr("myTotallySecretKey");
 const sendRmail = require("./Email/registrationOtp");
@@ -268,7 +266,7 @@ const UserInvoice = async (req, res) => {
       .sort({ invoiceNo: -1 })
       .exec();
 
-    res.json({ msg: data, status: 200 });
+    res.status(200).json({ status: 200, msg: data });
   } catch (error) {
     res.status(400).send(error);
   }
@@ -307,70 +305,6 @@ const FindInvoice = async (req, res) => {
   } catch (error) {
     res.status(400).send(error);
   }
-};
-
-const formatDate = (date) => {
-  const [year, month, day] = date.split("-");
-  return `${day}-${month}-${year}`;
-};
-
-const downloadInsertInvoice = async (InvoiceName) => {
-  const data = await invoiceModule.Invoice.findOne({ InvoiceName })
-    .sort({
-      invoiceNo: -1,
-    })
-    .exec();
-
-  const currency = await currencyModule.currencyList.findOne({
-    currencySymbol: data.currency,
-  });
-
-  var Items = [];
-  for (var i = 0; i < data.Items.length; i++) {
-    Items.push({
-      name: data.Items[i].itemName,
-      quantity: data.Items[i].itemQty,
-      unit_cost: data.Items[i].itemRate,
-    });
-  }
-  var invoice = {
-    logo: data.logo,
-    from: data.formTitle,
-    to: data.billTo,
-    ship_to: data.shipTo,
-    currency: currency.countryName,
-    number: data.invoiceNo,
-    date: data.createDate,
-    payment_terms: data.paymentTerms,
-    phone: data.phone,
-    due_date: data.dueDate,
-    items: Items,
-    fields: {
-      tax: data.taxType,
-      discounts: data.discountType,
-      shipping: data.shipping,
-    },
-    discounts: data.discount,
-    tax: data.tax,
-    shipping: data.shipping,
-    amount_paid: data.paidAmount,
-    notes: data.notes,
-    terms: data.terms,
-  };
-
-  const date = data.dateI;
-  const time = data.timeI;
-  const fileName = date.replaceAll(" ", "") + time.replaceAll(":", "");
-  iGenerate.generateInvoice(
-    invoice,
-    fileName + ".pdf",
-    function () {
-      console.log("Saved invoice to invoice.pdf");
-    },
-    function (error) {
-      console.error(error);
-    }
-  );
 };
 
 const downloadInvoice = async (_id) => {
@@ -428,49 +362,9 @@ const downloadInvoice = async (_id) => {
   );
 };
 
-const inertData = async (
-  formData,
-  Items,
-  email,
-  invoiceNo,
-  createDate,
-  dueDate,
-  dateI,
-  timeI,
-  InvoiceName
-) => {
-  await invoiceModule.Invoice.create({
-    email: email,
-    logo: "",
-    invoice: formData.invoice,
-    invoiceNo: invoiceNo,
-    dateI,
-    timeI,
-    formTitle: formData.formTitle,
-    billTo: formData.billTo,
-    shipTo: formData.shipTo,
-    createDate,
-    paymentTerms: formData.paymentTerms,
-    dueDate,
-    Phone: formData.phoneNumber,
-    Items,
-    notes: formData.itemNotes,
-    terms: formData.itemTerms,
-    subTotal: formData.subTotal,
-    discount: formData.billdiscount,
-    discountType: formData.discountType,
-    tax: formData.biltax,
-    taxType: formData.taxType,
-    shipping: formData.shipping,
-    total: formData.total,
-    paidAmount: formData.paidAmount,
-    balanceDue: formData.balanceDue,
-    currency: formData.currency,
-    status: false,
-    InvoiceName,
-  });
-
-  downloadInsertInvoice(InvoiceName);
+const formatDate = (date) => {
+  const [year, month, day] = date.split("-");
+  return `${day}-${month}-${year}`;
 };
 
 const UpdateInvoiceData = async (formData, Items, _id, createDate, dueDate) => {
@@ -504,21 +398,6 @@ const UpdateInvoiceData = async (formData, Items, _id, createDate, dueDate) => {
   );
 
   downloadInvoice(_id);
-};
-
-const UpdateInvoice = async (req, res) => {
-  try {
-    const _id = await req.body._id;
-    const formData = await req.body.formData;
-    const createDate = formatDate(formData.billdate);
-    const dueDate = formatDate(formData.billDuedate);
-    const Items = await req.body.items;
-
-    UpdateInvoiceData(formData, Items, _id, createDate, dueDate);
-    res.status(200).json({ status: 200, msg: "Update SuccessFully" });
-  } catch (error) {
-    res.status(400).send(error);
-  }
 };
 
 const UpdateInvoiceLogo = async (
@@ -562,9 +441,25 @@ const UpdateInvoiceLogo = async (
   downloadInvoice(_id);
 };
 
+const UpdateInvoice = async (req, res) => {
+  try {
+    const _id = await req.body._id;
+    const formData = await req.body.formData;
+    const createDate = formatDate(formData.billdate);
+    const dueDate = formatDate(formData.billDuedate);
+    const Items = await req.body.items;
+
+    UpdateInvoiceData(formData, Items, _id, createDate, dueDate);
+    res.status(200).json({ status: 200, msg: "Update SuccessFully" });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
 const LogoUpdate = async (req, res) => {
   try {
     const logo = await req.file.filename;
+
     const formData = JSON.parse(await req.body.formData);
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
@@ -590,17 +485,39 @@ const OnlyInvoice = async (req, res) => {
 
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
-    inertData(
-      formData,
-      Items,
-      email,
-      invoiceNo,
-      createDate,
-      dueDate,
+    const id = dateI + timeI;
+
+    await invoiceModule.Invoice.create({
+      _id: id.replaceAll(" ", ""),
+      email: email,
+      logo: "",
+      invoice: formData.invoice,
+      invoiceNo: invoiceNo,
       dateI,
       timeI,
-      InvoiceName
-    );
+      formTitle: formData.formTitle,
+      billTo: formData.billTo,
+      shipTo: formData.shipTo,
+      createDate,
+      paymentTerms: formData.paymentTerms,
+      dueDate,
+      Phone: formData.phoneNumber,
+      Items,
+      notes: formData.itemNotes,
+      terms: formData.itemTerms,
+      subTotal: formData.subTotal,
+      discount: formData.billdiscount,
+      discountType: formData.discountType,
+      tax: formData.biltax,
+      taxType: formData.taxType,
+      shipping: formData.shipping,
+      total: formData.total,
+      paidAmount: formData.paidAmount,
+      balanceDue: formData.balanceDue,
+      currency: formData.currency,
+      status: false,
+      InvoiceName,
+    });
     res.status(200).send("Done");
   } catch (error) {
     res.status(400).send(error);
@@ -623,7 +540,7 @@ module.exports = {
   InvoiceDelete,
   InvoiceStatus,
   FindInvoice,
-  LogoUpdate,
   UpdateInvoice,
+  LogoUpdate,
   OnlyInvoice,
 };
