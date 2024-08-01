@@ -37,9 +37,9 @@ const ensureDirectoryExistence = (dir) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // const dir = path.resolve(__dirname, "Image/Logo");
-    // ensureDirectoryExistence(dir);
-    cb(null, "./Image/Logo");
+    const dir = path.resolve(__dirname, "Image/Logo");
+    ensureDirectoryExistence(dir);
+    cb(null, dir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
