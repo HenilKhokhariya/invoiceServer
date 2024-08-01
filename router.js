@@ -88,7 +88,7 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     await invoiceModule.Invoice.create({
       _id: id.replaceAll(" ", ""),
       email: email,
-      logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + LogoName,
+      logo: "https://invoice-server-pi.vercel.app/Image/Logo/" + LogoName,
       invoice: formData.invoice,
       invoiceNo: invoiceNo,
       dateI,
