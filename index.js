@@ -7,6 +7,7 @@ var corsOptions = {
   origin: "http://localhost:3000",
   optionsSuccessStatus: 200,
   methods: "POST,GET,PUT,DELETE",
+  headers: ["Content-Type", "Authorization"],
   credentials: true,
 };
 app.use("/Image/Logo", express.static("Image/Logo"));
