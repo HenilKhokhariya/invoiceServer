@@ -4,7 +4,7 @@ const app = express();
 const router = require("./router");
 const cors = require("cors");
 var corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "*",
   optionsSuccessStatus: 200,
   methods: "POST,GET,PUT,DELETE",
   credentials: true,
