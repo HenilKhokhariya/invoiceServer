@@ -37,7 +37,7 @@ const ensureDirectoryExistence = (dir) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = path.resolve(__dirname, "Image/Logo");
+    const dir = path.resolve(__dirname, "/Image/Logo");
     ensureDirectoryExistence(dir);
     cb(null, dir);
   },
@@ -81,7 +81,7 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     const InvoiceName = await req.body.invoiceName;
     const dateI = await req.body.dateI;
     const timeI = await req.body.timeI;
-
+    
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
     const id = dateI + timeI;
