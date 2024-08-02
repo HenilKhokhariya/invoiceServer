@@ -3,8 +3,14 @@ const path = require("path");
 const fs = require("fs");
 const router = express.Router();
 const controler = require("./controler");
-const multer = require("multer");
 const invoiceModule = require("./module/invoice");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret, // Click 'View Credentials' below to copy your API secret
+});
 
 router.route("/").get(controler.Home);
 router.route("/RegisterOtp").post(controler.RegisterOtp);
@@ -23,57 +29,24 @@ router.route("/InvoiceStatus").post(controler.InvoiceStatus);
 router.route("/FindInvoice").post(controler.FindInvoice);
 router.route("/UpdateInvoice").post(controler.UpdateInvoice);
 router.route("/OnlyInvoice").post(controler.OnlyInvoice);
+router.route("/testUp").post(controler.TestUploadCloud);
 
 const formatDate = (date) => {
   const [year, month, day] = date.split("-");
   return `${day}-${month}-${year}`;
 };
 
-const ensureDirectoryExistence = (dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-};
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = path.resolve(__dirname, "Image/Logo");
-    ensureDirectoryExistence(dir);
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(
-      null,
-
-      uniqueSuffix + "-" + file.originalname
-    );
-  },
-});
-
-const upload = multer({ storage: storage });
-
-const storage1 = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = path.resolve(__dirname, "Image/Logo");
-    ensureDirectoryExistence(dir);
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(
-      null,
-
-      uniqueSuffix + "-" + file.originalname
-    );
-  },
-});
-
-const upload1 = multer({ storage: storage1 });
-
-router.post("/LogoUpload", upload.single("file"), async (req, res) => {
+router.post("/LogoUpload", async (req, res) => {
   try {
-    const LogoName = await req.file.filename;
+    const file = await req.files.file;
+    let filename = await cloudinary.uploader.upload(
+      file.tempFilePath,
+      { folder: "InvoiceLogo" },
+      (err, result) => {
+        return result;
+      }
+    );
+
     const formData = await JSON.parse(req.body.formData);
     const Items = await JSON.parse(req.body.items);
     const email = await req.body.email;
@@ -81,14 +54,14 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     const InvoiceName = await req.body.invoiceName;
     const dateI = await req.body.dateI;
     const timeI = await req.body.timeI;
-    console.log(1);
+
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
     const id = dateI + timeI;
     await invoiceModule.Invoice.create({
       _id: id.replaceAll(" ", ""),
       email: email,
-      logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + LogoName,
+      logo: filename.url,
       invoice: formData.invoice,
       invoiceNo: invoiceNo,
       dateI,
@@ -118,10 +91,11 @@ router.post("/LogoUpload", upload.single("file"), async (req, res) => {
     });
     res.status(200).send("Done");
   } catch (error) {
+    console.log(error);
     res.status(400).send(error);
   }
 });
 
-router.post("/LogoUpdate", upload1.single("file"), controler.LogoUpdate);
+router.post("/LogoUpdate", controler.LogoUpdate);
 
 module.exports = router;

@@ -5,6 +5,13 @@ const Cryptr = require("cryptr");
 const cryptr = new Cryptr("myTotallySecretKey");
 const sendRmail = require("./Email/registrationOtp");
 const sendForgetOtpmail = require("./Email/registrationOtp");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret, // Click 'View Credentials' below to copy your API secret
+});
 
 const Home = (req, res) => {
   try {
@@ -307,138 +314,9 @@ const FindInvoice = async (req, res) => {
   }
 };
 
-const downloadInvoice = async (_id) => {
-  const data = await invoiceModule.Invoice.findOne({ _id });
-
-  const currency = await currencyModule.currencyList.findOne({
-    currencySymbol: data.currency,
-  });
-
-  var Items = [];
-  for (var i = 0; i < data.Items.length; i++) {
-    Items.push({
-      name: data.Items[i].itemName,
-      quantity: data.Items[i].itemQty,
-      unit_cost: data.Items[i].itemRate,
-    });
-  }
-  var invoice = {
-    logo: data.logo,
-    from: data.formTitle,
-    to: data.billTo,
-    ship_to: data.shipTo,
-    currency: currency.countryName,
-    number: data.invoiceNo,
-    date: data.createDate,
-    payment_terms: data.paymentTerms,
-    phone: data.phone,
-    due_date: data.dueDate,
-    items: Items,
-    fields: {
-      tax: data.taxType,
-      discounts: data.discountType,
-      shipping: data.shipping,
-    },
-    discounts: data.discount,
-    tax: data.tax,
-    shipping: data.shipping,
-    amount_paid: data.paidAmount,
-    notes: data.notes,
-    terms: data.terms,
-  };
-
-  const date = data.dateI;
-  const time = data.timeI;
-  const fileName = date.replaceAll(" ", "") + time.replaceAll(":", "");
-  iGenerate.generateInvoice(
-    invoice,
-    fileName + ".pdf",
-    function () {
-      console.log("Saved invoice to invoice.pdf");
-    },
-    function (error) {
-      console.error(error);
-    }
-  );
-};
-
 const formatDate = (date) => {
   const [year, month, day] = date.split("-");
   return `${day}-${month}-${year}`;
-};
-
-const UpdateInvoiceData = async (formData, Items, _id, createDate, dueDate) => {
-  await invoiceModule.Invoice.updateOne(
-    { _id },
-    {
-      $set: {
-        invoice: formData.invoice,
-        formTitle: formData.formTitle,
-        billTo: formData.billTo,
-        shipTo: formData.shipTo,
-        createDate,
-        paymentTerms: formData.paymentTerms,
-        dueDate,
-        Phone: formData.phoneNumber,
-        notes: formData.itemNotes,
-        terms: formData.itemTerms,
-        currency: formData.currency,
-        subTotal: formData.subTota,
-        taxType: formData.taxType,
-        discountType: formData.discountType,
-        shipping: formData.shipping,
-        paidAmount: formData.paidAmount,
-        total: formData.total,
-        balanceDue: formData.balanceDue,
-        tax: formData.biltax,
-        discount: formData.billdiscount,
-        Items: Items,
-      },
-    }
-  );
-
-  downloadInvoice(_id);
-};
-
-const UpdateInvoiceLogo = async (
-  formData,
-  Items,
-  _id,
-  createDate,
-  dueDate,
-  logo
-) => {
-  await invoiceModule.Invoice.updateOne(
-    { _id },
-    {
-      $set: {
-        logo: "https://invoiceserver-nfyb.onrender.com/Image/Logo/" + logo,
-        invoice: formData.invoice,
-        formTitle: formData.formTitle,
-        billTo: formData.billTo,
-        shipTo: formData.shipTo,
-        createDate,
-        paymentTerms: formData.paymentTerms,
-        dueDate,
-        Phone: formData.phoneNumber,
-        notes: formData.itemNotes,
-        terms: formData.itemTerms,
-        currency: formData.currency,
-        subTotal: formData.subTota,
-        taxType: formData.taxType,
-        discountType: formData.discountType,
-        shipping: formData.shipping,
-        paidAmount: formData.paidAmount,
-        total: formData.total,
-        balanceDue: formData.balanceDue,
-        tax: formData.biltax,
-        discount: formData.billdiscount,
-        Items: Items,
-      },
-    }
-  );
-
-  downloadInvoice(_id);
 };
 
 const UpdateInvoice = async (req, res) => {
@@ -448,8 +326,35 @@ const UpdateInvoice = async (req, res) => {
     const createDate = formatDate(formData.billdate);
     const dueDate = formatDate(formData.billDuedate);
     const Items = await req.body.items;
+    await invoiceModule.Invoice.updateOne(
+      { _id },
+      {
+        $set: {
+          invoice: formData.invoice,
+          formTitle: formData.formTitle,
+          billTo: formData.billTo,
+          shipTo: formData.shipTo,
+          createDate,
+          paymentTerms: formData.paymentTerms,
+          dueDate,
+          Phone: formData.phoneNumber,
+          notes: formData.itemNotes,
+          terms: formData.itemTerms,
+          currency: formData.currency,
+          subTotal: formData.subTotal,
+          taxType: formData.taxType,
+          discountType: formData.discountType,
+          shipping: formData.shipping,
+          paidAmount: formData.paidAmount,
+          total: formData.total,
+          balanceDue: formData.balanceDue,
+          tax: formData.biltax,
+          discount: formData.billdiscount,
+          Items: Items,
+        },
+      }
+    );
 
-    UpdateInvoiceData(formData, Items, _id, createDate, dueDate);
     res.status(200).json({ status: 200, msg: "Update SuccessFully" });
   } catch (error) {
     res.status(400).send(error);
@@ -458,7 +363,14 @@ const UpdateInvoice = async (req, res) => {
 
 const LogoUpdate = async (req, res) => {
   try {
-    const logo = await req.file.filename;
+    const file = await req.files.file;
+    let filename = await cloudinary.uploader.upload(
+      file.tempFilePath,
+      { folder: "InvoiceLogo" },
+      (err, result) => {
+        return result;
+      }
+    );
 
     const formData = JSON.parse(await req.body.formData);
     const createDate = formatDate(formData.billdate);
@@ -466,7 +378,35 @@ const LogoUpdate = async (req, res) => {
     const Items = await JSON.parse(await req.body.items);
     const _id = await req.body._id;
 
-    UpdateInvoiceLogo(formData, Items, _id, createDate, dueDate, logo);
+    await invoiceModule.Invoice.updateOne(
+      { _id },
+      {
+        $set: {
+          logo: filename.url,
+          invoice: formData.invoice,
+          formTitle: formData.formTitle,
+          billTo: formData.billTo,
+          shipTo: formData.shipTo,
+          createDate,
+          paymentTerms: formData.paymentTerms,
+          dueDate,
+          Phone: formData.phoneNumber,
+          notes: formData.itemNotes,
+          terms: formData.itemTerms,
+          currency: formData.currency,
+          subTotal: formData.subTotal,
+          taxType: formData.taxType,
+          discountType: formData.discountType,
+          shipping: formData.shipping,
+          paidAmount: formData.paidAmount,
+          total: formData.total,
+          balanceDue: formData.balanceDue,
+          tax: formData.biltax,
+          discount: formData.billdiscount,
+          Items: Items,
+        },
+      }
+    );
     res.status(200).json({ status: 200, msg: "Update SuccessFully" });
   } catch (error) {
     res.status(400).send(error);
@@ -524,6 +464,18 @@ const OnlyInvoice = async (req, res) => {
   }
 };
 
+const TestUploadCloud = async (req, res) => {
+  try {
+    const file = await req.files.file;
+    cloudinary.uploader.upload(file.tempFilePath, (err, result) => {
+      console.log(result);
+    });
+    res.status(200).json("Done");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   Home,
   Register,
@@ -543,4 +495,5 @@ module.exports = {
   UpdateInvoice,
   LogoUpdate,
   OnlyInvoice,
+  TestUploadCloud,
 };
