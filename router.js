@@ -1,16 +1,29 @@
 const express = require("express");
-const path = require("path");
-const fs = require("fs");
 const router = express.Router();
 const controler = require("./controler");
+const controlerM = require("./mobilecontroler");
 const invoiceModule = require("./module/invoice");
 const cloudinary = require("cloudinary").v2;
+const validate = require("./Middleware-Validation/validate-middleware");
+const validSchema = require("./Validator/auth-validator");
 
 cloudinary.config({
   cloud_name: process.env.cloud_name,
   api_key: process.env.api_key,
   api_secret: process.env.api_secret, // Click 'View Credentials' below to copy your API secret
 });
+
+router
+  .route("/App/RegisterOtp")
+  .post(validate(validSchema.signupSchema), controlerM.RegisterOtp);
+
+router
+  .route("/App/Register")
+  .post(validate(validSchema.registerSchema), controlerM.Register);
+
+router
+  .route("/App/Login")
+  .post(validate(validSchema.loginSchema), controlerM.Register);
 
 router.route("/").get(controler.Home);
 router.route("/RegisterOtp").post(controler.RegisterOtp);
