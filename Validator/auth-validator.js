@@ -39,7 +39,7 @@ const signupSchema = z.object({
 });
 
 const registerSchema = z.object({
-  otp: z.number({ required_error: "Enter Number Otp" }),
+  otp: z.any({ required_error: "Enter Number Otp" }),
   token: z.string({ required_error: "Invalid Token" }),
 });
 
