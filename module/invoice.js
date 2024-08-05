@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { boolean } = require("zod");
 
 const itemSchema = new mongoose.Schema({
   itemName: { type: String, required: true },
@@ -23,21 +24,21 @@ const invoiceSchema = mongoose.Schema(
     createDate: { type: String },
     paymentTerms: { type: String },
     dueDate: { type: String },
-    Phone: { type: String },
+    Phone: { type: Number },
     Items: [itemSchema],
     notes: { type: String },
     terms: { type: String },
-    subTotal: { type: String },
-    discount: { type: String },
+    subTotal: { type: Number },
+    discount: { type: Number },
     discountType: { type: String },
-    tax: { type: String },
+    tax: { type: Number },
     taxType: { type: String },
-    shipping: { type: String },
-    total: { type: String },
-    paidAmount: { type: String },
-    balanceDue: { type: String },
+    shipping: { type: Number },
+    total: { type: Number },
+    paidAmount: { type: Number },
+    balanceDue: { type: Number },
     currency: { type: String },
-    status: { type: String },
+    status: { type: Boolean },
     InvoiceName: { type: String },
   },
   {

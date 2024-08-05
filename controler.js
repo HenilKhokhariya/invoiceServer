@@ -4,10 +4,8 @@ const currencyModule = require("./module/currencyList");
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr("myTotallySecretKey");
 const sendRmail = require("./Email/registrationOtp");
-const sendForgetOtpmail = require("./Email/registrationOtp");
+const sendForgetOtpmail = require("./Email/ForgetOtp");
 const cloudinary = require("cloudinary").v2;
-
-
 
 cloudinary.config({
   cloud_name: process.env.cloud_name,
@@ -87,6 +85,7 @@ const NewPw = async (req, res) => {
     res.status(400).send("Not Found");
   }
 };
+
 const Login = async (req, res) => {
   try {
     var { email, password } = await req.body;

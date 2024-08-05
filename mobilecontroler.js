@@ -1,10 +1,11 @@
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr("myTotallySecretKey");
 const sendRmail = require("./Email/registrationOtp");
-const sendForgetOtpmail = require("./Email/registrationOtp");
+const sendForgetOtpmail = require("./Email/ForgetOtp");
 const userModule = require("./module/user");
 const jwt = require("jsonwebtoken");
 const jwt_key = process.env.jwt_key;
+const jwt_header = process.env.jwt_header;
 
 function generateOTP(length) {
   // All possible characters of my OTP
@@ -40,7 +41,7 @@ const RegisterOtp = async (req, res) => {
       }
       sendRmail.main(email, otp, user);
       const token = jwt.sign(playload, jwt_key, {
-        expiresIn: "24h",
+        expiresIn: "5m",
       });
 
       res
@@ -67,7 +68,7 @@ const Register = async (req, res) => {
 
       const userExist = await userModule.User.findOne({ email });
       if (userExist) {
-        res.status(400).json({ message: "User Already Exist", status: false });
+        res.status(400).json({ message: "Email Already Exist", status: false });
         return;
       }
 
@@ -81,7 +82,7 @@ const Register = async (req, res) => {
 
       return res
         .status(200)
-        .json({ message: "Create User SuccessFully", status: "200" });
+        .json({ message: "Create User SuccessFully", status: true });
     }
     return res.status(400).json({ message: "Enter Valid Otp", status: false });
   } catch (error) {
@@ -125,8 +126,67 @@ const Login = async (req, res) => {
   }
 };
 
+const ForgetOtp = async (req, res) => {
+  try {
+    const { email } = await req.body;
+    const otp = generateOTP(6);
+    const userExist = await userModule.User.findOne({ email });
+    if (userExist) {
+      sendForgetOtpmail.main(email, otp);
+      const playload = {
+        email,
+        otp,
+      };
+      const token = jwt.sign(playload, jwt_key, {
+        expiresIn: "5m",
+      });
+      res
+        .status(200)
+        .json({ status: true, message: "Otp send successfully", token });
+
+      return;
+    }
+    res.status(400).json({ status: false, message: "Email not exist" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ status: false, message: "Internet server Error" });
+  }
+};
+
+const ForgetPw = async (req, res) => {
+  try {
+    const { otp, token } = await req.body;
+    jwt.verify(token, jwt_key);
+    const data = jwt.decode(token, jwt_key);
+    const compare = data.otp == otp;
+    if (compare) {
+      return res.status(200).json({ message: "Success", status: true });
+    }
+    res.status(400).json({ status: false, message: "Enter Valid Otp" });
+  } catch (error) {
+    res.status(400).json({ status: false, message: "Otp Expire" });
+  }
+};
+
+const NewPw = async (req, res) => {
+  try {
+    var { email, password } = await req.body;
+
+    password = cryptr.encrypt(password);
+    await userModule.User.updateOne({ email }, { $set: { password } });
+
+    res
+      .status(200)
+      .json({ status: true, message: "Password Change SuccessFully" });
+  } catch (error) {
+    res.status(400).json({ status: false, message: "Otp Expire" });
+  }
+};
 module.exports = {
   RegisterOtp,
   Register,
   Login,
+  ForgetOtp,
+  ForgetPw,
+  NewPw,
 };
