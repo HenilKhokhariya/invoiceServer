@@ -36,7 +36,7 @@ const RegisterOtp = async (req, res) => {
     if (aggre) {
       const userExist = await userModule.User.findOne({ email });
       if (userExist) {
-        res.json({ message: "User Already Exist", status: "400" });
+        res.json({ status: false, message: "User Already Exist" });
         return;
       }
       sendRmail.main(email, otp, user);
@@ -66,7 +66,7 @@ const ResendOtp = async (req, res) => {
     const password = data.password;
     const userExist = await userModule.User.findOne({ email });
     if (userExist) {
-      res.json({ message: "User Already Exist", status: "400" });
+      res.json({ status: false, message: "User Already Exist" });
       return;
     }
     const otp = generateOTP(6);
@@ -83,13 +83,11 @@ const ResendOtp = async (req, res) => {
       expiresIn: "5m",
     });
 
-    res
-      .status(200)
-      .json({
-        message: "Otp Send SuccessFully",
-        status: true,
-        token: newtoken,
-      });
+    res.status(200).json({
+      message: "Otp Send SuccessFully",
+      status: true,
+      token: newtoken,
+    });
   } catch (error) {
     res.status(400).json({ status: false, message: "Otp Expire" });
   }
