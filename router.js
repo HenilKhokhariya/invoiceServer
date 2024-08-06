@@ -32,6 +32,7 @@ router
   .post(validate(validSchema.newPwSchema), controlerM.NewPw);
 
 router.route("/App/Checktoken").post(controlerM.Checktoken);
+router.route("/App/ResendOtp").post(controlerM.ResendOtp);
 
 ////////////////////////////////////////Web//////////////////////////////////////
 router.route("/").get(controler.Home);

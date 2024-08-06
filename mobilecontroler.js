@@ -23,7 +23,7 @@ function generateOTP(length) {
 
 const RegisterOtp = async (req, res) => {
   try {
-    var { email, fname, lname, password, aggre } = await req.body;
+    const { email, fname, lname, password, aggre } = await req.body;
     const otp = generateOTP(6);
     const user = fname + " " + lname;
     const playload = {
@@ -52,6 +52,46 @@ const RegisterOtp = async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ message: "Internet server Error" });
+  }
+};
+
+const ResendOtp = async (req, res) => {
+  try {
+    const { token } = await req.body;
+    jwt.verify(token, jwt_key);
+    const data = jwt.decode(token, jwt_key);
+    const email = data.email;
+    const fname = data.fname;
+    const lname = data.lname;
+    const password = data.password;
+    const userExist = await userModule.User.findOne({ email });
+    if (userExist) {
+      res.json({ message: "User Already Exist", status: "400" });
+      return;
+    }
+    const otp = generateOTP(6);
+    const playload = {
+      email,
+      fname,
+      lname,
+      password,
+      otp,
+    };
+    const user = fname + " " + lname;
+    sendRmail.main(email, otp, user);
+    const newtoken = jwt.sign(playload, jwt_key, {
+      expiresIn: "5m",
+    });
+
+    res
+      .status(200)
+      .json({
+        message: "Otp Send SuccessFully",
+        status: true,
+        token: newtoken,
+      });
+  } catch (error) {
+    res.status(400).json({ status: false, message: "Otp Expire" });
   }
 };
 
@@ -212,4 +252,5 @@ module.exports = {
   ForgetPw,
   NewPw,
   Checktoken,
+  ResendOtp,
 };
