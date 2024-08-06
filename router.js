@@ -23,7 +23,7 @@ router
 
 router
   .route("/App/Login")
-  .post(validate(validSchema.loginSchema), controlerM.Register);
+  .post(validate(validSchema.loginSchema), controlerM.Login);
 
 router.route("/App/ForgetOtp").post(controlerM.ForgetOtp);
 router.route("/App/ForgetPw").post(controlerM.ForgetPw);
@@ -31,6 +31,9 @@ router
   .route("/App/NewPw")
   .post(validate(validSchema.newPwSchema), controlerM.NewPw);
 
+router.route("/App/Checktoken").post(controlerM.Checktoken);
+
+////////////////////////////////////////Web//////////////////////////////////////
 router.route("/").get(controler.Home);
 router.route("/RegisterOtp").post(controler.RegisterOtp);
 router.route("/ForgetPw").post(controler.ForgetPw);

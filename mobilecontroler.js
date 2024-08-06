@@ -86,7 +86,7 @@ const Register = async (req, res) => {
     }
     return res.status(400).json({ message: "Enter Valid Otp", status: false });
   } catch (error) {
-    return res.status(400).json({ message: "Invalid Token" });
+    return res.status(400).json({ message: "Invalid Token", status: false });
   }
 };
 
@@ -182,6 +182,17 @@ const NewPw = async (req, res) => {
     res.status(400).json({ status: false, message: "Otp Expire" });
   }
 };
+
+const Checktoken = async (req, res) => {
+  try {
+    var { token } = await req.body;
+    jwt.verify(token, jwt_key);
+    res.status(200).json({ status: true, message: "Token Valid" });
+  } catch (error) {
+    res.status(400).json({ status: false, message: "Token Invalid" });
+  }
+};
+
 module.exports = {
   RegisterOtp,
   Register,
@@ -189,4 +200,5 @@ module.exports = {
   ForgetOtp,
   ForgetPw,
   NewPw,
+  Checktoken,
 };
