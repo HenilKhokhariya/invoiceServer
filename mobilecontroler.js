@@ -79,10 +79,20 @@ const Register = async (req, res) => {
         password,
         date_time,
       });
+      const playload = {
+        email,
+      };
 
+      const token = jwt.sign(playload, jwt_key, {
+        expiresIn: "24h",
+      });
+
+      res
+        .status(200)
+        .json({ status: true, message: "User SuccessFully Login", token });
       return res
         .status(200)
-        .json({ message: "Create User SuccessFully", status: true });
+        .json({ status: true, message: "Create User SuccessFully", token });
     }
     return res.status(400).json({ message: "Enter Valid Otp", status: false });
   } catch (error) {
@@ -186,6 +196,7 @@ const NewPw = async (req, res) => {
 const Checktoken = async (req, res) => {
   try {
     var { token } = await req.body;
+
     jwt.verify(token, jwt_key);
     res.status(200).json({ status: true, message: "Token Valid" });
   } catch (error) {
