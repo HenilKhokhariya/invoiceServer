@@ -8,6 +8,14 @@ const jwt_key = process.env.jwt_key;
 const jwt_header = process.env.jwt_header;
 const invoiceModule = require("./module/invoice");
 const { InvoiceMobile } = require("./module/invoiceMobile");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret, // Click 'View Credentials' below to copy your API secret
+});
+
 function generateOTP(length) {
   // All possible characters of my OTP
   let str = "123456789";
@@ -317,16 +325,26 @@ const InvoiceNumber = async (req, res) => {
 
 const InvoiceCreate = async (req, res) => {
   try {
-    const { token, formData } = await req.body;
+    const file = (await req.files.file) || "";
+    const formData = await JSON.parse(req.body.formData);
+    const Items = await JSON.parse(req.body.Items);
+    const token = await req.body.token;
     jwt.verify(token, jwt_key);
     const tokenInfo = jwt.decode(token, jwt_key);
+    let filename = await cloudinary.uploader.upload(
+      file.tempFilePath,
+      { folder: "InvoiceLogo" },
+      (err, result) => {
+        return result;
+      }
+    );
     const email = tokenInfo.email;
     const dateI = new Date().toString().substring(0, 15);
     const timeI = new Date().toString().substring(16, 24);
     const z = new Date(formData.currentDate).toISOString();
     await InvoiceMobile.create({
       email,
-      logo: "",
+      logo: filename.url,
       invoice: formData.invoice,
       invoiceNo: formData.invoiceNo,
       formTitle: formData.formTitle,
@@ -336,7 +354,7 @@ const InvoiceCreate = async (req, res) => {
       paymentTerms: formData.paymentTerms,
       dueDate: formData.dueDate,
       Phone: formData.phoneNumber,
-      Items: formData.Items,
+      Items,
       notes: formData.itemNotes,
       terms: formData.itemTerms,
       subTotal: formData.subTotal,
