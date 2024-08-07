@@ -34,6 +34,11 @@ router
 router.route("/App/Checktoken").post(controlerM.Checktoken);
 router.route("/App/ResendOtp").post(controlerM.ResendOtp);
 
+router.route("/App/Profile").post(controlerM.Profile);
+router
+  .route("/App/ProfileUpdate")
+  .put(validate(validSchema.profileUpdate), controlerM.ProfileUpdate);
+
 ////////////////////////////////////////Web//////////////////////////////////////
 router.route("/").get(controler.Home);
 router.route("/RegisterOtp").post(controler.RegisterOtp);

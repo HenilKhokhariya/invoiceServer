@@ -90,4 +90,27 @@ const newPwSchema = z.object({
       message: "Password must contain at least one special character",
     }),
 });
-module.exports = { signupSchema, registerSchema, loginSchema, newPwSchema };
+
+const profileUpdate = z.object({
+  fname: z
+    .string({ required_error: "First Name is required" })
+    .trim()
+    .min(2, { message: "Fisrt Name must be at lest of 2 chars." })
+    .max(255, { message: "Fisrt Name must be at lest of 3 chars. " }),
+
+  lname: z
+    .string({ required_error: "Last Name is required" })
+    .trim()
+    .min(2, { message: "Last Name must be at lest of 2 chars." })
+    .max(255, { message: "Last Name must be at lest of 3 chars. " }),
+
+  token: z.any({ required_error: "Enter Valid Token" }),
+});
+
+module.exports = {
+  signupSchema,
+  registerSchema,
+  loginSchema,
+  newPwSchema,
+  profileUpdate,
+};

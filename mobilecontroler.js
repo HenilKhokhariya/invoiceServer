@@ -157,7 +157,7 @@ const Login = async (req, res) => {
         });
         res
           .status(200)
-          .json({ status: true, message: "User SuccessFully Login", token });
+          .json({ status: true, message: "Login SuccessFully", token });
       } else {
         res
           .status(400)
@@ -208,7 +208,9 @@ const ForgetPw = async (req, res) => {
     const data = jwt.decode(token, jwt_key);
     const compare = data.otp == otp;
     if (compare) {
-      return res.status(200).json({ message: "Success", status: true });
+      return res
+        .status(200)
+        .json({ message: "Otp Verify Successfully", status: true });
     }
     res.status(400).json({ status: false, message: "Enter Valid Otp" });
   } catch (error) {
@@ -242,6 +244,45 @@ const Checktoken = async (req, res) => {
   }
 };
 
+const Profile = async (req, res) => {
+  try {
+    const { token } = await req.body;
+    jwt.verify(token, jwt_key);
+    const tokenInfo = jwt.decode(token, jwt_key);
+    const email = tokenInfo.email;
+    const user = await userModule.User.find({ email });
+    if (user) {
+      return res
+        .status(200)
+        .json({ status: true, message: "User Is Exist", data: user });
+    }
+    return res.status(400).json({ status: false, message: "User Not Exist" });
+  } catch (error) {
+    return res.status(400).json({ status: false, message: "Token Invalid" });
+  }
+};
+
+const ProfileUpdate = async (req, res) => {
+  try {
+    const { token, fname, lname } = await req.body;
+    jwt.verify(token, jwt_key);
+    const tokenInfo = jwt.decode(token, jwt_key);
+    const email = tokenInfo.email;
+    const user = await userModule.User.find({ email });
+    if (user) {
+      await userModule.User.updateOne({ email }, { $set: { fname, lname } });
+
+      return res.status(200).json({
+        status: true,
+        message: "Profile Update Successfully",
+      });
+    }
+    return res.status(400).json({ status: false, message: "User Not Exist" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ status: false, message: "Token Invalid" });
+  }
+};
 module.exports = {
   RegisterOtp,
   Register,
@@ -251,4 +292,6 @@ module.exports = {
   NewPw,
   Checktoken,
   ResendOtp,
+  Profile,
+  ProfileUpdate,
 };
