@@ -299,12 +299,16 @@ const InvoiceNumber = async (req, res) => {
       })
       .select("invoiceNo")
       .exec();
-    console.log(data);
-    const invoiceNo = parseInt(data.invoiceNo) + 1;
-
-    return res
-      .status(400)
-      .json({ status: true, message: "success !", invoiceNo: invoiceNo });
+    if (data == null) {
+      return res
+        .status(200)
+        .json({ status: true, message: "success !", invoiceNo: 1 });
+    } else {
+      let invoiceNo = parseInt(data.invoiceNo) + 1;
+      return res
+        .status(200)
+        .json({ status: true, message: "success !", invoiceNo: invoiceNo });
+    }
   } catch (error) {
     console.log(error);
     return res.status(400).json({ status: false, message: "Token Invalid" });
