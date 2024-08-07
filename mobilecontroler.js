@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const jwt_key = process.env.jwt_key;
 const jwt_header = process.env.jwt_header;
 const invoiceModule = require("./module/invoice");
-
+const { InvoiceMobile } = require("./module/invoiceMobile");
 function generateOTP(length) {
   // All possible characters of my OTP
   let str = "123456789";
@@ -271,7 +271,7 @@ const ProfileUpdate = async (req, res) => {
     jwt.verify(token, jwt_key);
     const tokenInfo = jwt.decode(token, jwt_key);
     const email = tokenInfo.email;
-    const user = await invoiceModule.Invoice.findOne({ email });
+    const user = await userModule.User.findOne({ email });
     if (user) {
       await userModule.User.updateOne({ email }, { $set: { fname, lname } });
 
@@ -315,6 +315,54 @@ const InvoiceNumber = async (req, res) => {
   }
 };
 
+const InvoiceCreate = async (req, res) => {
+  try {
+    const { token, formData } = await req.body;
+    jwt.verify(token, jwt_key);
+    const tokenInfo = jwt.decode(token, jwt_key);
+    const email = tokenInfo.email;
+    const dateI = new Date().toString().substring(0, 15);
+    const timeI = new Date().toString().substring(16, 24);
+    await InvoiceMobile.create({
+      email,
+      logo: "",
+      invoice: formData.invoice,
+      invoiceNo: formData.invoiceNo,
+      formTitle: formData.formTitle,
+      billTo: formData.billTo,
+      shipTo: formData.shipTo,
+      createDate: formData.createDate,
+      paymentTerms: formData.paymentTerms,
+      dueDate: formData.dueDate,
+      Phone: formData.phoneNumber,
+      Items: formData.Items,
+      notes: formData.itemNotes,
+      terms: formData.itemTerms,
+      subTotal: formData.subTotal,
+      discount: formData.billdiscount,
+      discountType: formData.discountType,
+      tax: formData.biltax,
+      taxType: formData.taxType,
+      shipping: formData.shipping,
+      total: formData.total,
+      paidAmount: formData.paidAmount,
+      balanceDue: formData.balanceDue,
+      currency: formData.currency,
+      status: false,
+      InvoiceName: dateI + " " + timeI,
+    });
+
+    return res
+      .status(200)
+      .json({ status: true, message: "Create Invoice Successfully !" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ status: false, message: "Internet server Error" });
+  }
+};
+
 module.exports = {
   RegisterOtp,
   Register,
@@ -327,4 +375,5 @@ module.exports = {
   Profile,
   ProfileUpdate,
   InvoiceNumber,
+  InvoiceCreate,
 };
