@@ -39,6 +39,8 @@ router
   .route("/App/ProfileUpdate")
   .put(validate(validSchema.profileUpdate), controlerM.ProfileUpdate);
 
+router.route("/App/InvoiceNumber").post(controlerM.InvoiceNumber);
+
 ////////////////////////////////////////Web//////////////////////////////////////
 router.route("/").get(controler.Home);
 router.route("/RegisterOtp").post(controler.RegisterOtp);

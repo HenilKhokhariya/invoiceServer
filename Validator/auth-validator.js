@@ -96,13 +96,19 @@ const profileUpdate = z.object({
     .string({ required_error: "First Name is required" })
     .trim()
     .min(2, { message: "Fisrt Name must be at lest of 2 chars." })
-    .max(255, { message: "Fisrt Name must be at lest of 3 chars. " }),
+    .max(255, { message: "Fisrt Name must be at lest of 3 chars. " })
+    .regex(/^[a-zA-Z0-9]+$/, {
+      message: "First Name must contain only alphabets and numbers.",
+    }),
 
   lname: z
     .string({ required_error: "Last Name is required" })
     .trim()
     .min(2, { message: "Last Name must be at lest of 2 chars." })
-    .max(255, { message: "Last Name must be at lest of 3 chars. " }),
+    .max(255, { message: "Last Name must be at lest of 3 chars. " })
+    .regex(/^[a-zA-Z0-9]+$/, {
+      message: "First Name must contain only alphabets and numbers.",
+    }),
 
   token: z.any({ required_error: "Enter Valid Token" }),
 });

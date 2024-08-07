@@ -6,6 +6,7 @@ const userModule = require("./module/user");
 const jwt = require("jsonwebtoken");
 const jwt_key = process.env.jwt_key;
 const jwt_header = process.env.jwt_header;
+const invoiceModule = require("./module/invoice");
 
 function generateOTP(length) {
   // All possible characters of my OTP
@@ -270,7 +271,7 @@ const ProfileUpdate = async (req, res) => {
     jwt.verify(token, jwt_key);
     const tokenInfo = jwt.decode(token, jwt_key);
     const email = tokenInfo.email;
-    const user = await userModule.User.find({ email });
+    const user = await invoiceModule.Invoice.findOne({ email });
     if (user) {
       await userModule.User.updateOne({ email }, { $set: { fname, lname } });
 
@@ -280,6 +281,30 @@ const ProfileUpdate = async (req, res) => {
       });
     }
     return res.status(400).json({ status: false, message: "User Not Exist" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ status: false, message: "Token Invalid" });
+  }
+};
+
+const InvoiceNumber = async (req, res) => {
+  try {
+    const { token } = await req.body;
+    jwt.verify(token, jwt_key);
+    const tokenInfo = jwt.decode(token, jwt_key);
+    const email = tokenInfo.email;
+    const data = await invoiceModule.Invoice.findOne({ email })
+      .sort({
+        invoiceNo: -1,
+      })
+      .select("invoiceNo")
+      .exec();
+    console.log(data);
+    const invoiceNo = parseInt(data.invoiceNo) + 1;
+
+    return res
+      .status(400)
+      .json({ status: true, message: "success !", invoiceNo: invoiceNo });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ status: false, message: "Token Invalid" });
@@ -297,4 +322,5 @@ module.exports = {
   ResendOtp,
   Profile,
   ProfileUpdate,
+  InvoiceNumber,
 };
