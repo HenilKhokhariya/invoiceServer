@@ -374,7 +374,11 @@ const InvoiceCreate = async (req, res) => {
 
     return res
       .status(200)
-      .json({ status: true, message: "Create Invoice Successfully !" });
+      .json({
+        status: true,
+        message: "Create Invoice Successfully !",
+        imgUrl: filename.url,
+      });
   } catch (error) {
     console.log(error);
     return res
