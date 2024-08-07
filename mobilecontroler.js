@@ -250,7 +250,9 @@ const Profile = async (req, res) => {
     jwt.verify(token, jwt_key);
     const tokenInfo = jwt.decode(token, jwt_key);
     const email = tokenInfo.email;
-    const user = await userModule.User.find({ email });
+    const user = await userModule.User.findOne({ email }).select(
+      "fname lname email -_id"
+    );
     if (user) {
       return res
         .status(200)
@@ -283,6 +285,7 @@ const ProfileUpdate = async (req, res) => {
     return res.status(400).json({ status: false, message: "Token Invalid" });
   }
 };
+
 module.exports = {
   RegisterOtp,
   Register,
