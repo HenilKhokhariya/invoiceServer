@@ -40,6 +40,7 @@ router
   .put(validate(validSchema.profileUpdate), controlerM.ProfileUpdate);
 
 router.route("/App/InvoiceNumber").post(controlerM.InvoiceNumber);
+router.route("/App/InvoiceCreate").post(controlerM.InvoiceCreate);
 
 ////////////////////////////////////////Web//////////////////////////////////////
 router.route("/").get(controler.Home);
@@ -89,7 +90,6 @@ router.post("/LogoUpload", async (req, res) => {
     const dueDate = formatDate(formData.billDuedate);
     const id = dateI + timeI;
     await invoiceModule.Invoice.create({
-      _id: id.replaceAll(" ", ""),
       email: email,
       logo: filename.url,
       invoice: formData.invoice,
@@ -121,7 +121,6 @@ router.post("/LogoUpload", async (req, res) => {
     });
     res.status(200).send("Done");
   } catch (error) {
-    console.log(error);
     res.status(400).send(error);
   }
 });

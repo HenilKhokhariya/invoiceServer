@@ -323,6 +323,7 @@ const InvoiceCreate = async (req, res) => {
     const email = tokenInfo.email;
     const dateI = new Date().toString().substring(0, 15);
     const timeI = new Date().toString().substring(16, 24);
+    const z = new Date(formData.currentDate).toISOString();
     await InvoiceMobile.create({
       email,
       logo: "",
@@ -350,6 +351,7 @@ const InvoiceCreate = async (req, res) => {
       currency: formData.currency,
       status: false,
       InvoiceName: dateI + " " + timeI,
+      date_time: z,
     });
 
     return res
