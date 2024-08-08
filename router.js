@@ -45,6 +45,7 @@ router
   .route("/App/InvoiceCreate")
   .post(upload.single("image"), controlerM.InvoiceCreate);
 router.route("/App/UserInvoiceFind").post(controlerM.UserInvoiceFind);
+router.route("/App/InvoiceID").post(controlerM.InvoiceID);
 ////////////////////////////////////////Web//////////////////////////////////////
 router.route("/").get(controler.Home);
 router.route("/RegisterOtp").post(controler.RegisterOtp);

@@ -316,7 +316,6 @@ const InvoiceNumber = async (req, res) => {
 
 const InvoiceCreate = async (req, res) => {
   try {
-    // console.log(req.file.filename);
     const file = await req.file.filename;
     const formData = await JSON.parse(req.body.formData);
     const Items = await JSON.parse(req.body.Items);
@@ -377,9 +376,11 @@ const UserInvoiceFind = async (req, res) => {
     jwt.verify(token, jwt_key);
     const tokenInfo = jwt.decode(token, jwt_key);
     const email = tokenInfo.email;
-    const data = await InvoiceMobile.find({ email }).sort({
-      invoiceNo: -1,
-    });
+    const data = await InvoiceMobile.find({ email })
+      .sort({
+        invoiceNo: -1,
+      })
+      .select("invoiceNo logo createDate formTitle _id");
     if (data == null) {
       return res
         .status(200)
@@ -390,6 +391,25 @@ const UserInvoiceFind = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(400).json({ status: false, message: "Token Invalid" });
+  }
+};
+
+const InvoiceID = async (req, res) => {
+  try {
+    const { _id } = await req.body;
+    if (!_id) {
+      return res
+        .status(400)
+        .json({ status: false, message: "Not Available !" });
+    }
+    const data = await InvoiceMobile.find({ _id });
+    if (_id) {
+      return res.status(200).json({ status: true, message: "success !", data });
+    }
+    return res.status(400).json({ status: false, message: "Not Available !" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ status: false, message: "Server Error" });
   }
 };
 
@@ -407,4 +427,5 @@ module.exports = {
   InvoiceNumber,
   InvoiceCreate,
   UserInvoiceFind,
+  InvoiceID,
 };
