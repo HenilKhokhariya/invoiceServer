@@ -8,13 +8,7 @@ const jwt_key = process.env.jwt_key;
 const jwt_header = process.env.jwt_header;
 const invoiceModule = require("./module/invoice");
 const { InvoiceMobile } = require("./module/invoiceMobile");
-const cloudinary = require("cloudinary").v2;
-
-cloudinary.config({
-  cloud_name: process.env.cloud_name,
-  api_key: process.env.api_key,
-  api_secret: process.env.api_secret, // Click 'View Credentials' below to copy your API secret
-});
+// const upload = require("./UploadSetup/multer");
 
 function generateOTP(length) {
   // All possible characters of my OTP
@@ -300,7 +294,7 @@ const InvoiceNumber = async (req, res) => {
     jwt.verify(token, jwt_key);
     const tokenInfo = jwt.decode(token, jwt_key);
     const email = tokenInfo.email;
-    const data = await invoiceModule.Invoice.findOne({ email })
+    const data = await InvoiceMobile.findOne({ email })
       .sort({
         invoiceNo: -1,
       })
@@ -323,58 +317,63 @@ const InvoiceNumber = async (req, res) => {
 
 const InvoiceCreate = async (req, res) => {
   try {
-    const file = (await req.files.file) || "";
-    const formData = await JSON.parse(req.body.formData);
-    const Items = await JSON.parse(req.body.Items);
-    const token = await req.body.token;
-    jwt.verify(token, jwt_key);
-    const tokenInfo = jwt.decode(token, jwt_key);
-    let filename = await cloudinary.uploader.upload(
-      file.tempFilePath,
-      { folder: "InvoiceLogo" },
-      (err, result) => {
-        return result;
+    upload(req, res, (err) => {
+      if (err) {
+        console.log(err);
+        res.status(400).json({ message: err });
+      } else {
+        if (req.file == undefined) {
+          return res.status(400).json({ message: "No file selected!" });
+        } else {
+          return res.status(200).json({ message: "Done !" });
+        }
       }
-    );
-    const email = tokenInfo.email;
-    const dateI = new Date().toString().substring(0, 15);
-    const timeI = new Date().toString().substring(16, 24);
-    const z = new Date(formData.currentDate).toISOString();
-    await InvoiceMobile.create({
-      email,
-      logo: filename.url,
-      invoice: formData.invoice,
-      invoiceNo: formData.invoiceNo,
-      formTitle: formData.formTitle,
-      billTo: formData.billTo,
-      shipTo: formData.shipTo,
-      createDate: formData.createDate,
-      paymentTerms: formData.paymentTerms,
-      dueDate: formData.dueDate,
-      Phone: formData.phoneNumber,
-      Items,
-      notes: formData.itemNotes,
-      terms: formData.itemTerms,
-      subTotal: formData.subTotal,
-      discount: formData.billdiscount,
-      discountType: formData.discountType,
-      tax: formData.biltax,
-      taxType: formData.taxType,
-      shipping: formData.shipping,
-      total: formData.total,
-      paidAmount: formData.paidAmount,
-      balanceDue: formData.balanceDue,
-      currency: formData.currency,
-      status: false,
-      InvoiceName: dateI + " " + timeI,
-      date_time: z,
     });
+    // const formData = await JSON.parse(req.body.formData);
+    // const Items = await JSON.parse(req.body.Items);
+    // const token = await req.body.token;
+    // jwt.verify(token, jwt_key);
+    // const tokenInfo = jwt.decode(token, jwt_key);
 
-    return res.status(200).json({
-      status: true,
-      message: "Create Invoice Successfully !",
-      imgUrl: filename.url,
-    });
+    // const email = tokenInfo.email;
+    // const dateI = new Date().toString().substring(0, 15);
+    // const timeI = new Date().toString().substring(16, 24);
+    // const z = new Date(formData.currentDate).toISOString();
+    // await InvoiceMobile.create({
+    //   email,
+    //   logo: "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/" + "",
+    //   invoice: formData.invoice,
+    //   invoiceNo: formData.invoiceNo,
+    //   formTitle: formData.formTitle,
+    //   billTo: formData.billTo,
+    //   shipTo: formData.shipTo,
+    //   createDate: formData.createDate,
+    //   paymentTerms: formData.paymentTerms,
+    //   dueDate: formData.dueDate,
+    //   Phone: formData.phoneNumber,
+    //   Items,
+    //   notes: formData.itemNotes,
+    //   terms: formData.itemTerms,
+    //   subTotal: formData.subTotal,
+    //   discount: formData.billdiscount,
+    //   discountType: formData.discountType,
+    //   tax: formData.biltax,
+    //   taxType: formData.taxType,
+    //   shipping: formData.shipping,
+    //   total: formData.total,
+    //   paidAmount: formData.paidAmount,
+    //   balanceDue: formData.balanceDue,
+    //   currency: formData.currency,
+    //   status: false,
+    //   InvoiceName: dateI + " " + timeI,
+    //   date_time: z,
+    // });
+
+    // return res.status(200).json({
+    //   status: true,
+    //   message: "Create Invoice Successfully !",
+    //   imgUrl: filename.url,
+    // });
   } catch (error) {
     console.log(error);
     return res
