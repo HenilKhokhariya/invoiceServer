@@ -41,6 +41,7 @@ router
 
 router.route("/App/InvoiceNumber").post(controlerM.InvoiceNumber);
 router.route("/App/InvoiceCreate").post(controlerM.InvoiceCreate);
+router.route("/App/UserInvoiceFind").post(controlerM.UserInvoiceFind);
 
 ////////////////////////////////////////Web//////////////////////////////////////
 router.route("/").get(controler.Home);

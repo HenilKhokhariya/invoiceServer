@@ -290,7 +290,6 @@ const ProfileUpdate = async (req, res) => {
     }
     return res.status(400).json({ status: false, message: "User Not Exist" });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({ status: false, message: "Token Invalid" });
   }
 };
@@ -318,7 +317,6 @@ const InvoiceNumber = async (req, res) => {
         .json({ status: true, message: "success !", invoiceNo: invoiceNo });
     }
   } catch (error) {
-    console.log(error);
     return res.status(400).json({ status: false, message: "Token Invalid" });
   }
 };
@@ -372,18 +370,38 @@ const InvoiceCreate = async (req, res) => {
       date_time: z,
     });
 
-    return res
-      .status(200)
-      .json({
-        status: true,
-        message: "Create Invoice Successfully !",
-        imgUrl: filename.url,
-      });
+    return res.status(200).json({
+      status: true,
+      message: "Create Invoice Successfully !",
+      imgUrl: filename.url,
+    });
   } catch (error) {
     console.log(error);
     return res
       .status(400)
       .json({ status: false, message: "Internet server Error" });
+  }
+};
+
+const UserInvoiceFind = async (req, res) => {
+  try {
+    const { token } = await req.body;
+    jwt.verify(token, jwt_key);
+    const tokenInfo = jwt.decode(token, jwt_key);
+    const email = tokenInfo.email;
+    const data = await invoiceModule.Invoice.find({ email }).sort({
+      invoiceNo: -1,
+    });
+    if (data == null) {
+      return res
+        .status(200)
+        .json({ status: true, message: "success !", data: "Empty" });
+    } else {
+      return res.status(200).json({ status: true, message: "success !", data });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ status: false, message: "Token Invalid" });
   }
 };
 
@@ -400,4 +418,5 @@ module.exports = {
   ProfileUpdate,
   InvoiceNumber,
   InvoiceCreate,
+  UserInvoiceFind,
 };
