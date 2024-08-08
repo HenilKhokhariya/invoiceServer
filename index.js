@@ -16,7 +16,7 @@ var corsOptions = {
 };
 
 app.use(
-  "/Image/Logo",
+  "/uploads/Image/Logo",
   express.static(path.join(__dirname, "uploads/Image/Logo"))
 );
 
