@@ -14,12 +14,11 @@ var corsOptions = {
   headers: ["Content-Type", "Authorization"],
   credentials: true,
 };
+
 app.use(
   "/Image/Logo",
   express.static(path.join(__dirname, "uploads/Image/Logo"))
 );
-
-app.use("/Image/MobileLogo", express.static("Image/MobileLogo"));
 
 app.use(cors(corsOptions));
 const connectDB = require("./Mongo/conncetion");
