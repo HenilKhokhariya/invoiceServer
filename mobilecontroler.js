@@ -5,10 +5,9 @@ const sendForgetOtpmail = require("./Email/ForgetOtp");
 const userModule = require("./module/user");
 const jwt = require("jsonwebtoken");
 const jwt_key = process.env.jwt_key;
-const jwt_header = process.env.jwt_header;
-const invoiceModule = require("./module/invoice");
+// const jwt_header = process.env.jwt_header;
+// const invoiceModule = require("./module/invoice");
 const { InvoiceMobile } = require("./module/invoiceMobile");
-// const upload = require("./UploadSetup/multer");
 
 function generateOTP(length) {
   // All possible characters of my OTP
@@ -317,24 +316,11 @@ const InvoiceNumber = async (req, res) => {
 
 const InvoiceCreate = async (req, res) => {
   try {
-    upload(req, res, (err) => {
-      if (err) {
-        console.log(err);
-        res.status(400).json({ message: err });
-      } else {
-        if (req.file == undefined) {
-          return res.status(400).json({ message: "No file selected!" });
-        } else {
-          return res.status(200).json({ message: "Done !" });
-        }
-      }
-    });
     // const formData = await JSON.parse(req.body.formData);
     // const Items = await JSON.parse(req.body.Items);
     // const token = await req.body.token;
     // jwt.verify(token, jwt_key);
     // const tokenInfo = jwt.decode(token, jwt_key);
-
     // const email = tokenInfo.email;
     // const dateI = new Date().toString().substring(0, 15);
     // const timeI = new Date().toString().substring(16, 24);
@@ -368,7 +354,6 @@ const InvoiceCreate = async (req, res) => {
     //   InvoiceName: dateI + " " + timeI,
     //   date_time: z,
     // });
-
     // return res.status(200).json({
     //   status: true,
     //   message: "Create Invoice Successfully !",
@@ -388,7 +373,7 @@ const UserInvoiceFind = async (req, res) => {
     jwt.verify(token, jwt_key);
     const tokenInfo = jwt.decode(token, jwt_key);
     const email = tokenInfo.email;
-    const data = await invoiceModule.Invoice.find({ email }).sort({
+    const data = await InvoiceMobile.find({ email }).sort({
       invoiceNo: -1,
     });
     if (data == null) {
