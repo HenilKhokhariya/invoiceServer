@@ -316,49 +316,53 @@ const InvoiceNumber = async (req, res) => {
 
 const InvoiceCreate = async (req, res) => {
   try {
-    // const formData = await JSON.parse(req.body.formData);
-    // const Items = await JSON.parse(req.body.Items);
-    // const token = await req.body.token;
-    // jwt.verify(token, jwt_key);
-    // const tokenInfo = jwt.decode(token, jwt_key);
-    // const email = tokenInfo.email;
-    // const dateI = new Date().toString().substring(0, 15);
-    // const timeI = new Date().toString().substring(16, 24);
-    // const z = new Date(formData.currentDate).toISOString();
-    // await InvoiceMobile.create({
-    //   email,
-    //   logo: "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/" + "",
-    //   invoice: formData.invoice,
-    //   invoiceNo: formData.invoiceNo,
-    //   formTitle: formData.formTitle,
-    //   billTo: formData.billTo,
-    //   shipTo: formData.shipTo,
-    //   createDate: formData.createDate,
-    //   paymentTerms: formData.paymentTerms,
-    //   dueDate: formData.dueDate,
-    //   Phone: formData.phoneNumber,
-    //   Items,
-    //   notes: formData.itemNotes,
-    //   terms: formData.itemTerms,
-    //   subTotal: formData.subTotal,
-    //   discount: formData.billdiscount,
-    //   discountType: formData.discountType,
-    //   tax: formData.biltax,
-    //   taxType: formData.taxType,
-    //   shipping: formData.shipping,
-    //   total: formData.total,
-    //   paidAmount: formData.paidAmount,
-    //   balanceDue: formData.balanceDue,
-    //   currency: formData.currency,
-    //   status: false,
-    //   InvoiceName: dateI + " " + timeI,
-    //   date_time: z,
-    // });
-    // return res.status(200).json({
-    //   status: true,
-    //   message: "Create Invoice Successfully !",
-    //   imgUrl: filename.url,
-    // });
+    // console.log(req.file.filename);
+    const file = await req.file.filename;
+    const formData = await JSON.parse(req.body.formData);
+    const Items = await JSON.parse(req.body.Items);
+    const token = await req.body.token;
+    jwt.verify(token, jwt_key);
+    const tokenInfo = jwt.decode(token, jwt_key);
+    const email = tokenInfo.email;
+    const dateI = new Date().toString().substring(0, 15);
+    const timeI = new Date().toString().substring(16, 24);
+    const z = new Date(formData.currentDate).toISOString();
+    const filename =
+      "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/" + file;
+    await InvoiceMobile.create({
+      email,
+      logo: filename,
+      invoice: formData.invoice,
+      invoiceNo: formData.invoiceNo,
+      formTitle: formData.formTitle,
+      billTo: formData.billTo,
+      shipTo: formData.shipTo,
+      createDate: formData.createDate,
+      paymentTerms: formData.paymentTerms,
+      dueDate: formData.dueDate,
+      Phone: formData.phoneNumber,
+      Items,
+      notes: formData.itemNotes,
+      terms: formData.itemTerms,
+      subTotal: formData.subTotal,
+      discount: formData.billdiscount,
+      discountType: formData.discountType,
+      tax: formData.biltax,
+      taxType: formData.taxType,
+      shipping: formData.shipping,
+      total: formData.total,
+      paidAmount: formData.paidAmount,
+      balanceDue: formData.balanceDue,
+      currency: formData.currency,
+      status: false,
+      InvoiceName: dateI + " " + timeI,
+      date_time: z,
+    });
+    return res.status(200).json({
+      status: true,
+      message: "Create Invoice Successfully !",
+      imgUrl: filename,
+    });
   } catch (error) {
     console.log(error);
     return res

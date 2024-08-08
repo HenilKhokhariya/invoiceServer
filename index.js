@@ -3,7 +3,10 @@ const express = require("express");
 const app = express();
 const router = require("./router");
 const cors = require("cors");
-const fileupload = require("express-fileupload");
+const path = require("path");
+
+app.use(express.urlencoded({ extended: true }));
+
 var corsOptions = {
   origin: "http://localhost:3000",
   optionsSuccessStatus: 200,
@@ -11,18 +14,17 @@ var corsOptions = {
   headers: ["Content-Type", "Authorization"],
   credentials: true,
 };
-app.use("/Image/Logo", express.static("Image/Logo"));
+app.use(
+  "/Image/Logo",
+  express.static(path.join(__dirname, "uploads/Image/Logo"))
+);
+
+app.use("/Image/MobileLogo", express.static("Image/MobileLogo"));
 
 app.use(cors(corsOptions));
 const connectDB = require("./Mongo/conncetion");
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
-
-app.use(
-  fileupload({
-    useTempFiles: true,
-  })
-);
 
 app.use("/api", router);
 connectDB().then(

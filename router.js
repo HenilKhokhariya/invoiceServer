@@ -6,6 +6,7 @@ const invoiceModule = require("./module/invoice");
 const cloudinary = require("cloudinary").v2;
 const validate = require("./Middleware-Validation/validate-middleware");
 const validSchema = require("./Validator/auth-validator");
+const upload = require("./multer");
 
 cloudinary.config({
   cloud_name: process.env.cloud_name,
@@ -40,9 +41,10 @@ router
   .put(validate(validSchema.profileUpdate), controlerM.ProfileUpdate);
 
 router.route("/App/InvoiceNumber").post(controlerM.InvoiceNumber);
-router.route("/App/InvoiceCreate").post(controlerM.InvoiceCreate);
+router
+  .route("/App/InvoiceCreate")
+  .post(upload.single("image"), controlerM.InvoiceCreate);
 router.route("/App/UserInvoiceFind").post(controlerM.UserInvoiceFind);
-
 ////////////////////////////////////////Web//////////////////////////////////////
 router.route("/").get(controler.Home);
 router.route("/RegisterOtp").post(controler.RegisterOtp);
