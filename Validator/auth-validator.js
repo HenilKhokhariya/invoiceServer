@@ -35,6 +35,8 @@ const signupSchema = z.object({
     .regex(/[^a-zA-Z0-9]/, {
       message: "Password must contain at least one special character",
     }),
+    date:z.any(),
+    time:z.any(),
   aggre: z.boolean(),
 });
 
@@ -65,6 +67,8 @@ const loginSchema = z.object({
     .regex(/[^a-zA-Z0-9]/, {
       message: "Password must contain at least one special character",
     }),
+    date:z.any(),
+    time:z.any(),
 });
 
 const newPwSchema = z.object({

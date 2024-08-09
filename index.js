@@ -15,6 +15,12 @@ var corsOptions = {
   credentials: true,
 };
 
+// app.use(express.static(path.join(__dirname, '../client/build')));
+
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+// });
+
 app.use(
   "/uploads/Image/Logo",
   express.static(path.join(__dirname, "uploads/Image/Logo"))

@@ -26,7 +26,7 @@ function generateOTP(length) {
 
 const RegisterOtp = async (req, res) => {
   try {
-    const { email, fname, lname, password, aggre } = await req.body;
+    const { email, fname, lname, password,date,time,aggre } = await req.body;
     const otp = generateOTP(6);
     const user = fname + " " + lname;
     const playload = {
@@ -35,6 +35,7 @@ const RegisterOtp = async (req, res) => {
       lname,
       password,
       otp,
+      date,time
     };
     if (aggre) {
       const userExist = await userModule.User.findOne({ email });
@@ -67,6 +68,9 @@ const ResendOtp = async (req, res) => {
     const fname = data.fname;
     const lname = data.lname;
     const password = data.password;
+    const date = data.date;
+    const time = data.time;
+    
     const userExist = await userModule.User.findOne({ email });
     if (userExist) {
       res.json({ status: false, message: "User Already Exist" });
@@ -79,6 +83,8 @@ const ResendOtp = async (req, res) => {
       lname,
       password,
       otp,
+      date,
+      time
     };
     const user = fname + " " + lname;
     sendRmail.main(email, otp, user);
@@ -102,9 +108,12 @@ const Register = async (req, res) => {
     jwt.verify(token, jwt_key);
     const data = jwt.decode(token, jwt_key);
     const compare = data.otp == otp;
+    const date = data.date;
+    const time = data.time;
+    const dt= date+"T"+time+"Z";
     if (compare) {
-      const date_time = new Date().toString().substring(0, 25);
       const email = data.email;
+      const date_time = new Date(dt).toISOString();
       const password = cryptr.encrypt(data.password);
 
       const userExist = await userModule.User.findOne({ email });
@@ -143,9 +152,10 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
   try {
-    var { email, password } = await req.body;
-    const date_time = new Date().toString().substring(0, 25);
-
+    var { email, password,date,time } = await req.body;
+    const dt = date+"T"+time+"Z";
+    const date_time = new Date(dt).toISOString();
+    // await userModule.UserLogin.deleteMany({});
     const userExist = await userModule.User.findOne({ email });
     if (userExist) {
       let passwordUser = cryptr.decrypt(userExist.password);
@@ -256,6 +266,7 @@ const Profile = async (req, res) => {
     const user = await userModule.User.findOne({ email }).select(
       "fname lname email -_id"
     );
+    
     if (user) {
       return res
         .status(200)
@@ -429,6 +440,10 @@ const CurrencyData = async (req, res) => {
       res.status(400).send(error);
     }  
 }
+
+const InvoiceUpdate = async (req,res)=>{
+
+}
 module.exports = {
   RegisterOtp,
   Register,
@@ -444,5 +459,6 @@ module.exports = {
   InvoiceCreate,
   UserInvoiceFind,
   InvoiceID,
-  CurrencyData
+  CurrencyData,
+  InvoiceUpdate
 };

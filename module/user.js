@@ -5,12 +5,12 @@ const userSchema = mongoose.Schema({
   lname: { type: String, require: true },
   email: { type: String, require: true },
   password: { type: String, require: true },
-  date_time: { type: String, require: true },
+  date_time: {type:Date,require: true},
 });
 
 const userLoginSchema = mongoose.Schema({
   email: { type: String, require: true },
-  date_time: { type: String, require: true },
+  date_time: { type:Date,require: true },
 });
 
 const User = mongoose.model("User", userSchema);
