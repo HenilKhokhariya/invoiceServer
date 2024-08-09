@@ -319,7 +319,7 @@ const InvoiceCreate = async (req, res) => {
     const isFile = await JSON.parse( req.body.isFile);
     let filename="";
     if(!isFile){
-      filename = "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/logo.svg";
+      filename = "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/logo.png";
     }else{
       const file = await req.file.filename;
       filename = "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/" + file;
