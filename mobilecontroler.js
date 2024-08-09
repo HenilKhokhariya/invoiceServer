@@ -6,7 +6,7 @@ const userModule = require("./module/user");
 const jwt = require("jsonwebtoken");
 const jwt_key = process.env.jwt_key;
 // const jwt_header = process.env.jwt_header;
-// const invoiceModule = require("./module/invoice");
+
 const { InvoiceMobile } = require("./module/invoiceMobile");
 
 function generateOTP(length) {
@@ -316,7 +316,14 @@ const InvoiceNumber = async (req, res) => {
 
 const InvoiceCreate = async (req, res) => {
   try {
-    const file = await req.file.filename;
+    const isFile = await req.file;
+    let filename="";
+    if(!isFile){
+      filename = "https://invoiceserver-nfyb.onrender.com/uploads/default/logo.svg";
+    }else{
+      const file = await req.file.filename;
+      filename = "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/" + file;
+    }
     const formData = await JSON.parse(req.body.formData);
     const Items = await JSON.parse(req.body.Items);
     const token = await req.body.token;
@@ -326,8 +333,7 @@ const InvoiceCreate = async (req, res) => {
     const dateI = new Date().toString().substring(0, 15);
     const timeI = new Date().toString().substring(16, 24);
     const z = new Date(formData.currentDate).toISOString();
-    const filename =
-      "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/" + file;
+      
     await InvoiceMobile.create({
       email,
       logo: filename,
