@@ -121,7 +121,6 @@ const Register = async (req, res) => {
         res.status(400).json({ message: "Email Already Exist", status: false });
         return;
       }
-
       await userModule.User.create({
         fname: data.fname,
         lname: data.lname,
@@ -136,10 +135,6 @@ const Register = async (req, res) => {
       const token = jwt.sign(playload, jwt_key, {
         expiresIn: "24h",
       });
-
-      res
-        .status(200)
-        .json({ status: true, message: "User SuccessFully Login", token });
       return res
         .status(200)
         .json({ status: true, message: "Create User SuccessFully", token });
@@ -426,7 +421,6 @@ const InvoiceID = async (req, res) => {
     }
     return res.status(400).json({ status: false, message: "Not Available !" });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({ status: false, message: "Server Error" });
   }
 };
@@ -434,16 +428,29 @@ const InvoiceID = async (req, res) => {
 const CurrencyData = async (req, res) => {
     try {
       const data = await currencyModule.currencyList.find({});
-  
       res.json({ msg: data, status: 200 });
     } catch (error) {
-      res.status(400).send(error);
+      return res.status(400).json({ status: false, message: "Server Error" });
     }  
 }
 
 const InvoiceUpdate = async (req,res)=>{
-
 }
+
+const InvoiceDelete = async(req,res)=>{
+  try {
+    const {_id} = await req.body._id;
+    console.log(_id)
+    if (_id) {
+      await InvoiceMobile.deleteOne({_id});
+      return res.status(200).json({ status: true, message: "success !" });
+    }
+    return res.status(400).json({ status: false, message: "Not Available !" });
+  } catch (error) {
+    return res.status(400).json({ status: false, message: "Server Error" });
+  } 
+}
+
 module.exports = {
   RegisterOtp,
   Register,
@@ -460,5 +467,6 @@ module.exports = {
   UserInvoiceFind,
   InvoiceID,
   CurrencyData,
-  InvoiceUpdate
+  InvoiceUpdate,
+  InvoiceDelete
 };
