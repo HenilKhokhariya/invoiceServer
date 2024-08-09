@@ -2,9 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const router = require("./router");
+const routerAdmin = require("./Admin/router");
 const cors = require("cors");
 const path = require("path");
-
 app.use(express.urlencoded({ extended: true }));
 
 var corsOptions = {
@@ -32,6 +32,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use("/api", router);
+app.use("/api/Admin", routerAdmin);
 connectDB().then(
   app.listen(PORT, (res) => {
     try {

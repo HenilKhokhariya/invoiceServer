@@ -1,0 +1,31 @@
+const {z} = require('zod');
+
+const adminCreateSchema = z.object({
+    a_name:z.string({ required_error: "First Name is required" })
+    .trim()
+    .min(2, { message: "Name must be at lest of 2 chars." })
+    .max(255, { message: "Name must be at lest of 3 chars. " }),
+    email: z
+    .string({ required_error: "Email is required" })
+    .trim()
+    .email({ message: "Invalid email address" })
+    .min(3, { message: "Email must be at lest of 3 chars." })
+    .max(100, { message: "Email must be at lest of 100 chars. " }),
+  password: z
+    .string({ required_error: "Password is required" })
+    .trim()
+    .min(7, { message: "Password must be at lest of 6 chars." })
+    .max(50, { message: "Password must be at lest of 50 chars. " })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .regex(/[0-9]/, { message: "Password must contain at least one number" })
+    .regex(/[^a-zA-Z0-9]/, {
+      message: "Password must contain at least one special character",
+    }),
+})
+
+module.exports = {adminCreateSchema}
