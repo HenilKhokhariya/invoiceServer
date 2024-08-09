@@ -43,13 +43,14 @@ router
   .post(upload.single("image"), controlerM.InvoiceCreate);
 
   router
-  .route("/App/InvoiceUpdate")
-  .post(upload.single("image"), controlerM.InvoiceUpdate);
+  .route("/App/Invoice/Update")
+  .put(upload.single("image"), controlerM.InvoiceUpdate);
 
 
 router.route("/App/UserInvoiceFind").post(controlerM.UserInvoiceFind);
 router.route("/App/InvoiceID").post(controlerM.InvoiceID);
 router.route("/App/CurrencyData").get(controlerM.CurrencyData);
+router.route("/App/Invoice/Delete").delete(controlerM.InvoiceDelete);
 
 
 ////////////////////////////////////////Web//////////////////////////////////////

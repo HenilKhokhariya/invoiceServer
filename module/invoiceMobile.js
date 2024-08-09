@@ -6,6 +6,7 @@ const itemSchema = new mongoose.Schema({
   itemRate: { type: Number, required: true },
   itemAmount: { type: Number, required: true },
   currency: { type: String, required: true },
+  itemDate: { type: Date, required: true },
 });
 
 const invoiceMSchema = mongoose.Schema(
@@ -37,6 +38,7 @@ const invoiceMSchema = mongoose.Schema(
     status: { type: Boolean },
     InvoiceName: { type: String },
     date_time: { type: Date },
+    update_time: { type: Date },
   },
   {
     timestamps: true,

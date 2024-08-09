@@ -369,6 +369,7 @@ const InvoiceCreate = async (req, res) => {
       status: false,
       InvoiceName: dateI + " " + timeI,
       date_time: z,
+      update_time:z
     });
     return res.status(200).json({
       status: true,
@@ -435,15 +436,72 @@ const CurrencyData = async (req, res) => {
 }
 
 const InvoiceUpdate = async (req,res)=>{
+  try {
+    const isFile = await JSON.parse( req.body.isFile);
+    let filename="";
+    if(!isFile){
+      filename = "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/logo.png";
+    }else{
+      const file = await req.file.filename;
+      filename = "https://invoiceserver-nfyb.onrender.com/uploads/Image/Logo/" + file;
+    }
+    const formData = await JSON.parse(req.body.formData);
+    const _id = await JSON.parse(req.body._id);
+    const Items = await JSON.parse(req.body.Items);
+    const token = await req.body.token;
+    jwt.verify(token, jwt_key);
+    const tokenInfo = jwt.decode(token, jwt_key);
+    const email = tokenInfo.email;
+    
+    const dt = formData.updateDate + "T" +formData.updateTime+"Z";
+    const z = new Date(dt).toISOString();
+      
+    await InvoiceMobile.updateOne({_id},{$set:{
+      email,
+      logo: filename,
+      invoice: formData.invoice,
+      invoiceNo: formData.invoiceNo,
+      formTitle: formData.formTitle,
+      billTo: formData.billTo,
+      shipTo: formData.shipTo,
+      createDate: formData.createDate,
+      paymentTerms: formData.paymentTerms,
+      dueDate: formData.dueDate,
+      Phone: formData.phoneNumber,
+      Items,
+      notes: formData.itemNotes,
+      terms: formData.itemTerms,
+      subTotal: formData.subTotal,
+      discount: formData.billdiscount,
+      discountType: formData.discountType,
+      tax: formData.biltax,
+      taxType: formData.taxType,
+      shipping: formData.shipping,
+      total: formData.total,
+      paidAmount: formData.paidAmount,
+      balanceDue: formData.balanceDue,
+      currency: formData.currency,
+      update_time:z
+    }});
+    return res.status(200).json({
+      status: true,
+      message: "Create Invoice Successfully !",
+      imgUrl: filename,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ status: false, message: "Internet server Error" });
+  }
 }
 
 const InvoiceDelete = async(req,res)=>{
   try {
-    const {_id} = await req.body._id;
-    console.log(_id)
+    const {_id} = await req.body;
     if (_id) {
       await InvoiceMobile.deleteOne({_id});
-      return res.status(200).json({ status: true, message: "success !" });
+      return res.status(200).json({ status: true, message: "Delete successfully !" });
     }
     return res.status(400).json({ status: false, message: "Not Available !" });
   } catch (error) {
