@@ -7,27 +7,14 @@ const jwt = require("jsonwebtoken");
 const jwt_key = process.env.jwt_key;
 const currencyModule = require('./module/currencyList');
 // const jwt_header = process.env.jwt_header;
-
+const getOtp = require('./geterateOtp');
 const { InvoiceMobile } = require("./module/invoiceMobile");
 
-function generateOTP(length) {
-  // All possible characters of my OTP
-  let str = "123456789";
-  let n = str.length;
-
-  // String to hold my OTP
-  let OTP = "";
-
-  for (var i = 1; i <= length; i++)
-    OTP += str[Math.floor(Math.random() * 10) % n];
-
-  return OTP;
-}
 
 const RegisterOtp = async (req, res) => {
   try {
     const { email, fname, lname, password,date,time,aggre } = await req.body;
-    const otp = generateOTP(6);
+    const otp = getOtp.generateOTP(6);
     const user = fname + " " + lname;
     const playload = {
       email,
@@ -55,6 +42,7 @@ const RegisterOtp = async (req, res) => {
       res.status(400).json({ message: "Select Checkbox" });
     }
   } catch (error) {
+    console.log(error)
     res.status(400).json({ message: "Internet server Error" });
   }
 };
@@ -374,7 +362,7 @@ const InvoiceCreate = async (req, res) => {
     return res.status(200).json({
       status: true,
       message: "Create Invoice Successfully !",
-      imgUrl: filename,
+
     });
   } catch (error) {
     console.log(error);
@@ -416,7 +404,7 @@ const InvoiceID = async (req, res) => {
         .status(400)
         .json({ status: false, message: "Not Available !" });
     }
-    const data = await InvoiceMobile.find({ _id });
+    const data = await InvoiceMobile.findOne({ _id });
     if (_id) {
       return res.status(200).json({ status: true, message: "success !", data });
     }
@@ -486,7 +474,6 @@ const InvoiceUpdate = async (req,res)=>{
     return res.status(200).json({
       status: true,
       message: "Create Invoice Successfully !",
-      imgUrl: filename,
     });
   } catch (error) {
     console.log(error);
