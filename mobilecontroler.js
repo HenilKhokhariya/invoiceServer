@@ -5,6 +5,7 @@ const sendForgetOtpmail = require("./Email/ForgetOtp");
 const userModule = require("./module/user");
 const jwt = require("jsonwebtoken");
 const jwt_key = process.env.jwt_key;
+const currencyModule = require('./module/currencyList');
 // const jwt_header = process.env.jwt_header;
 
 const { InvoiceMobile } = require("./module/invoiceMobile");
@@ -419,6 +420,15 @@ const InvoiceID = async (req, res) => {
   }
 };
 
+const CurrencyData = async (req, res) => {
+    try {
+      const data = await currencyModule.currencyList.find({});
+  
+      res.json({ msg: data, status: 200 });
+    } catch (error) {
+      res.status(400).send(error);
+    }  
+}
 module.exports = {
   RegisterOtp,
   Register,
@@ -434,4 +444,5 @@ module.exports = {
   InvoiceCreate,
   UserInvoiceFind,
   InvoiceID,
+  CurrencyData
 };

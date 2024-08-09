@@ -41,7 +41,7 @@ router
   .post(upload.single("image"), controlerM.InvoiceCreate);
 router.route("/App/UserInvoiceFind").post(controlerM.UserInvoiceFind);
 router.route("/App/InvoiceID").post(controlerM.InvoiceID);
-
+router.route("/App/CurrencyData").get(controlerM.CurrencyData);
 
 
 ////////////////////////////////////////Web//////////////////////////////////////
